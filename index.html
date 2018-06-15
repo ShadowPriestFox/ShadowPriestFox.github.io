@@ -242,6 +242,180 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://shadowpriestfox.github.io/2018/06/14/Spring-Bean-Scope/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Shadow Priest">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="夏都的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/06/14/Spring-Bean-Scope/" itemprop="url">Spring Bean Scope</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-06-14T22:38:19+08:00">
+                2018-06-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>最近在面试的时候跟候选人聊到Spring Bean的Scope，遂查了一番<a href="https://docs.spring.io/spring-framework/docs/current/spring-framework-reference/core.html#beans-factory-scopes" target="_blank" rel="noopener">文档</a>，大概总结一下。</p>
+<p>Spring 提供6种类型的scope，其中4种是在Web下使用的，当然scope也是可以自定义的。主要有下面这些scope:</p>
+<table>
+<thead>
+<tr>
+<th>Scope</th>
+<th>定义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>singleton</td>
+<td>默认scope，顾名思义这里的Bean是单例(在每一个Spring IoC 容器中)的。这里的单例并不是线程安全的，所以如果是Lazy Init的话必须小心。</td>
+</tr>
+<tr>
+<td>prototype</td>
+<td>每次使用Bean都会创建</td>
+</tr>
+<tr>
+<td>request</td>
+<td>每一个HTTP请求会创建一个Bean</td>
+</tr>
+<tr>
+<td>session</td>
+<td>每个HTTP Session会创建一个Bean</td>
+</tr>
+<tr>
+<td>application</td>
+<td>每个Servlet Context会创建一个Bean</td>
+</tr>
+<tr>
+<td>websocket</td>
+<td>每个Websocket连接会创建一个Bean</td>
+</tr>
+</tbody>
+</table>
+<p>下面会对每一个scope有一个小的总结：</p>
+<h3 id="singleton"><a href="#singleton" class="headerlink" title="singleton"></a>singleton</h3><p>这是默认的scope，每一个Spring IoC容器只有一个。在需要被注入的时候会由Spring 容器注入。所以一般来说singleton的bean应该为无状态的。</p>
+<h3 id="prototype"><a href="#prototype" class="headerlink" title="prototype"></a>prototype</h3><p>这种bean在被使用的时候都是初始化一个全新的bean交由使用者使用。这里需要注意的是Spring IoC容器并不会管理prototype整个生命周期。Spring IoC在初始化的时候会调用相应的生命周期回调。一旦bean交由使用者之后Spring将不会管理该bean。也就是说如果你申明了prototype的bean在使用完之后需要手动释放相应的资源。或者需要自定义bean post-processor去做相应的处理。</p>
+<h4 id="singleton与prototype"><a href="#singleton与prototype" class="headerlink" title="singleton与prototype"></a>singleton与prototype</h4><p>当你把一个prototype的bean注入到一个singleton的bean中的时候。这个singleton bean将只会持有一个prototype的bean。如果你需要在这个singleton bean中使用不同的prototype bean那么做法大概如下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Spring-API imports</span></span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.BeansException;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.ApplicationContext;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.ApplicationContextAware;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CommandManager</span> <span class="keyword">implements</span> <span class="title">ApplicationContextAware</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> ApplicationContext applicationContext;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">process</span><span class="params">(Map commandState)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// grab a new instance of the appropriate Command</span></span><br><span class="line">        Command command = createCommand();</span><br><span class="line">        <span class="comment">// set the state on the (hopefully brand new) Command instance</span></span><br><span class="line">        command.setState(commandState);</span><br><span class="line">        <span class="keyword">return</span> command.execute();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> Command <span class="title">createCommand</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// notice the Spring API dependency!</span></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.applicationContext.getBean(<span class="string">"command"</span>, Command.class);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setApplicationContext</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">            ApplicationContext applicationContext)</span> <span class="keyword">throws</span> BeansException </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.applicationContext = applicationContext;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="request-session-application和websocket"><a href="#request-session-application和websocket" class="headerlink" title="request,session,application和websocket"></a>request,session,application和websocket</h4><p>这四个scope就放在一起讲吧。</p>
+<ol>
+<li><p>这4个scope必须使用在web的Context中</p>
+</li>
+<li><p>还需要一些额外的初始化工作，如果是在Spring MVC的DispatcherServlet中的话可以不用做这些工作，因为Spring DispatcherServlet已经帮你做了这些工作了。但是如果不在DispatcherServlet中的话注册<code>org.springframework.web.context.request.RequestContextListener</code> 比如</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">web-app</span>&gt;</span></span><br><span class="line">    ...</span><br><span class="line">    <span class="tag">&lt;<span class="name">listener</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">listener-class</span>&gt;</span></span><br><span class="line">            org.springframework.web.context.request.RequestContextListener</span><br><span class="line">        <span class="tag">&lt;/<span class="name">listener-class</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">listener</span>&gt;</span></span><br><span class="line">    ...</span><br><span class="line"><span class="tag">&lt;/<span class="name">web-app</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>或者可以使用Filter</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">web-app</span>&gt;</span></span><br><span class="line">    ...</span><br><span class="line">    <span class="tag">&lt;<span class="name">filter</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">filter-name</span>&gt;</span>requestContextFilter<span class="tag">&lt;/<span class="name">filter-name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">filter-class</span>&gt;</span>org.springframework.web.filter.RequestContextFilter<span class="tag">&lt;/<span class="name">filter-class</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">filter</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">filter-mapping</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">filter-name</span>&gt;</span>requestContextFilter<span class="tag">&lt;/<span class="name">filter-name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">url-pattern</span>&gt;</span>/*<span class="tag">&lt;/<span class="name">url-pattern</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">filter-mapping</span>&gt;</span></span><br><span class="line">    ...</span><br><span class="line"><span class="tag">&lt;/<span class="name">web-app</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><code>DispatcherServlet</code>,<code>RequestContextListener</code>和<code>RequestContextFilter</code>做了同一件事，将HTTP request对象绑定到响应对应request的线程中。</p>
+<p>application这个scope是在ServletContext这一级别而不是ApplicationContext这一级别，这两个的区别请看<a href="/2018/06/13/Spring-MVC的context/" title="Spring MVC的context">Spring MVC的context</a>的内容.</p>
+<p>如果说想使用这4个scope的bean作为依赖被注入。那么需要设置该bean的AOP代理，默认来说是使用CGLib的。如果说要使用JDK标准的动态代理需要实现一个接口并将proxyMode设置为ScopedProxyMode.INTERFACES</p>
+<p>以上基本上就是几种scope的说明。</p>
+</li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://shadowpriestfox.github.io/2018/06/13/Spring-MVC的context/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -955,7 +1129,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-count">6</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -968,7 +1142,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-count">14</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>
@@ -984,6 +1158,20 @@
           
 
           
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                友情链接
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://e3gs.github.io" title="HOLY" target="_blank">HOLY</a>
+                  </li>
+                
+              </ul>
+            </div>
           
 
           
