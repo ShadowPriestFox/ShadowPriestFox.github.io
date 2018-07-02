@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Spring,ApplicationContext,Spring MVC,Servlet," />
+  <meta name="keywords" content="Spring,小程序,nginx,https,Websocket,Docker,SpringBoot,Let's Encrypt," />
 
 
 
@@ -79,20 +79,18 @@
 
 
 
-<meta name="description" content="公司比较老的Web项目是用Tomcat+SpringMVC来做的，有一个web.xml配置大概如下 1234567891011121314151617181920212223242526272829&amp;lt;web-app&amp;gt;    &amp;lt;listener&amp;gt;        &amp;lt;listener-class&amp;gt;org.springframework.web.context.Cont">
-<meta name="keywords" content="Spring,ApplicationContext,Spring MVC,Servlet">
+<meta name="description" content="因为公司的应用整个环境搭建还是挺麻烦的。在这边稍微记录一下。后续要找也方便。 https小程序要求强制使用HTTPS，想要使用免费证书Let’s Encrypt是一个好的选择。我一般比较习惯先试用certbot生成对应的证书然后再制定证书位置。所以Softeware选择None of above然后操作系统根据你想要的操作系统选择就好了。这里需要注意的是生成过程需要提供一个目录，也就是开放这个目录">
+<meta name="keywords" content="Spring,小程序,nginx,https,Websocket,Docker,SpringBoot,Let&#39;s Encrypt">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Spring MVC的context">
-<meta property="og:url" content="https://shadowpriestfox.github.io/2018/06/13/Spring-MVC的context/index.html">
+<meta property="og:title" content="小程序后端环境搭建">
+<meta property="og:url" content="https://shadowpriestfox.github.io/2018/07/01/小程序后端环境搭建/index.html">
 <meta property="og:site_name" content="夏都的博客">
-<meta property="og:description" content="公司比较老的Web项目是用Tomcat+SpringMVC来做的，有一个web.xml配置大概如下 1234567891011121314151617181920212223242526272829&amp;lt;web-app&amp;gt;    &amp;lt;listener&amp;gt;        &amp;lt;listener-class&amp;gt;org.springframework.web.context.Cont">
+<meta property="og:description" content="因为公司的应用整个环境搭建还是挺麻烦的。在这边稍微记录一下。后续要找也方便。 https小程序要求强制使用HTTPS，想要使用免费证书Let’s Encrypt是一个好的选择。我一般比较习惯先试用certbot生成对应的证书然后再制定证书位置。所以Softeware选择None of above然后操作系统根据你想要的操作系统选择就好了。这里需要注意的是生成过程需要提供一个目录，也就是开放这个目录">
 <meta property="og:locale" content="default">
-<meta property="og:image" content="https://s33.postimg.cc/42q4xgpi7/context.png">
-<meta property="og:updated_time" content="2018-06-13T15:32:46.000Z">
+<meta property="og:updated_time" content="2018-07-02T05:38:53.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Spring MVC的context">
-<meta name="twitter:description" content="公司比较老的Web项目是用Tomcat+SpringMVC来做的，有一个web.xml配置大概如下 1234567891011121314151617181920212223242526272829&amp;lt;web-app&amp;gt;    &amp;lt;listener&amp;gt;        &amp;lt;listener-class&amp;gt;org.springframework.web.context.Cont">
-<meta name="twitter:image" content="https://s33.postimg.cc/42q4xgpi7/context.png">
+<meta name="twitter:title" content="小程序后端环境搭建">
+<meta name="twitter:description" content="因为公司的应用整个环境搭建还是挺麻烦的。在这边稍微记录一下。后续要找也方便。 https小程序要求强制使用HTTPS，想要使用免费证书Let’s Encrypt是一个好的选择。我一般比较习惯先试用certbot生成对应的证书然后再制定证书位置。所以Softeware选择None of above然后操作系统根据你想要的操作系统选择就好了。这里需要注意的是生成过程需要提供一个目录，也就是开放这个目录">
 
 
 
@@ -122,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="https://shadowpriestfox.github.io/2018/06/13/Spring-MVC的context/"/>
+  <link rel="canonical" href="https://shadowpriestfox.github.io/2018/07/01/小程序后端环境搭建/"/>
 
 
 
 
 
-  <title>Spring MVC的context | 夏都的博客</title>
+  <title>小程序后端环境搭建 | 夏都的博客</title>
   
 
 
@@ -245,7 +243,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://shadowpriestfox.github.io/2018/06/13/Spring-MVC的context/">
+    <link itemprop="mainEntityOfPage" href="https://shadowpriestfox.github.io/2018/07/01/小程序后端环境搭建/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Shadow Priest">
@@ -262,7 +260,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Spring MVC的context</h1>
+          <h1 class="post-title" itemprop="name headline">小程序后端环境搭建</h1>
         
 
         <div class="post-meta">
@@ -274,8 +272,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-06-13T12:58:15+08:00">
-                2018-06-13
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-07-01T23:15:42+08:00">
+                2018-07-01
               </time>
             
 
@@ -312,21 +310,19 @@
       
 
       
-        <p>公司比较老的Web项目是用Tomcat+SpringMVC来做的，有一个web.xml配置大概如下</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">web-app</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">listener</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">listener-class</span>&gt;</span>org.springframework.web.context.ContextLoaderListener<span class="tag">&lt;/<span class="name">listener-class</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">listener</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">context-param</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">param-name</span>&gt;</span>contextClass<span class="tag">&lt;/<span class="name">param-name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">param-value</span>&gt;</span>org.springframework.web.context.support.AnnotationConfigWebApplicationContext<span class="tag">&lt;/<span class="name">param-value</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">context-param</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">context-param</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">param-name</span>&gt;</span>contextConfigLocation<span class="tag">&lt;/<span class="name">param-name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">param-value</span>&gt;</span>com.aibasis.config.AppContextConfig<span class="tag">&lt;/<span class="name">param-value</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">context-param</span>&gt;</span></span><br><span class="line">    ……</span><br><span class="line">    <span class="tag">&lt;<span class="name">servlet</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">servlet-name</span>&gt;</span>springMvc<span class="tag">&lt;/<span class="name">servlet-name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">servlet-class</span>&gt;</span>org.springframework.web.servlet.DispatcherServlet<span class="tag">&lt;/<span class="name">servlet-class</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">init-param</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">param-name</span>&gt;</span>contextClass<span class="tag">&lt;/<span class="name">param-name</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">param-value</span>&gt;</span>org.springframework.web.context.support.AnnotationConfigWebApplicationContext<span class="tag">&lt;/<span class="name">param-value</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">init-param</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">init-param</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">param-name</span>&gt;</span>contextConfigLocation<span class="tag">&lt;/<span class="name">param-name</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">param-value</span>&gt;</span>com.aibasis.config.DispatcherConfig<span class="tag">&lt;/<span class="name">param-value</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">init-param</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">load-on-startup</span>&gt;</span>1<span class="tag">&lt;/<span class="name">load-on-startup</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">async-supported</span>&gt;</span>true<span class="tag">&lt;/<span class="name">async-supported</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">servlet</span>&gt;</span></span><br><span class="line">    ……</span><br><span class="line"><span class="tag">&lt;/<span class="name">web-app</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>当时看到的时候还是比较困惑的，为什么会有两个context，以及这两个context到底是干什么用的。于是上网搜索了一番。</p>
-<ol>
-<li>第一个context也就是样例里的AppContextConfig，是Root WebApplicationContext。</li>
-<li>servlet标签中的context也就是样例中DispatcherConfig是servlet独享的context。<br><img src="https://s33.postimg.cc/42q4xgpi7/context.png" alt="图"></li>
-</ol>
-<p>需要说明的是一般来说Services,Repositories一般是放在Root Context中的，而Controller,ViewResolver,HandlerMapping一般是放在Servlet Context中的，Root Context会被所有的Servlet Context共享，是Servlet Context的Parent。当Spring在Servlet Context中查找不到Bean时会去Root Context中查找，反过来则不会。所以一般在Controller中做AOP无法成功。</p>
-<p>有些人认为<a href="https://stackoverflow.com/questions/3652090/difference-between-applicationcontext-xml-and-spring-servlet-xml-in-spring-frame" target="_blank" rel="noopener">StackOverFlow</a>在很多情况下你其实并不需要两个Context，因为通常只会有一个Servlet，所以ContextLoaderListener和Root Context并不需要，全部使用一个就好了。这里有个地方需要注意，就是你不能把ContextLoaderListener的context与Servlet context设置成同一个，这样bean会初始化两次(一次为Root Context的，一次Servlet Context的)，如果只想使用一个的话不设置Root Context就好了。还有一点有意思的是Spring Boot就只有一个Context。</p>
-<p>另外一种<a href="https://stackoverflow.com/questions/9016122/contextloaderlistener-or-not" target="_blank" rel="noopener">观点</a>就较为温和一些除了以下这些情况以外使用同一个context还是比较简单的:</p>
-<ol>
-<li>多个Servlet共享Service</li>
-<li>非Spring servlet项目需要访问Spring 提供的Service</li>
-<li>如果有Servlet filter需要(比如Spring Security的<code>DelegatingFilterProxy</code>,<code>OpenEntityManagerInViewFilter</code>等)</li>
-</ol>
+        <p>因为公司的应用整个环境搭建还是挺麻烦的。在这边稍微记录一下。后续要找也方便。</p>
+<h2 id="https"><a href="#https" class="headerlink" title="https"></a>https</h2><p>小程序要求强制使用HTTPS，想要使用免费证书<a href="https://certbot.eff.org" target="_blank" rel="noopener">Let’s Encrypt</a>是一个好的选择。我一般比较习惯先试用certbot生成对应的证书然后再制定证书位置。所以Softeware选择None of above然后操作系统根据你想要的操作系统选择就好了。这里需要注意的是生成过程需要提供一个目录，也就是开放这个目录给Let’s Encrypt做类似验证的操作。具体流程大约是：</p>
+<ul>
+<li>certbot往这个目录写入/.well-know/…某个文件</li>
+<li>cerbot访问你提供的域名/.well-know/这个文件来比对是否一致</li>
+</ul>
+<p>所以需要提供一个静态文件的服务。</p>
+<h2 id="Docker"><a href="#Docker" class="headerlink" title="Docker"></a>Docker</h2><p>这里Docker主要是用来run nginx的。(曾经被nginx编译折磨的人。)</p>
+<p>首先去<a href="https://docs.docker.com/install/linux/docker-ce/centos/" target="_blank" rel="noopener">Docker</a>查看文档安装Docker</p>
+<p>安装好后就可以准备nginx的配置文件了，由于使用了websocket也需要一并配置好</p>
+<h2 id="Nginx"><a href="#Nginx" class="headerlink" title="Nginx"></a>Nginx</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    listen 443 ssl;</span><br><span class="line">    server_name 你的域名;</span><br><span class="line">    ssl_certificate Let&apos;s Encrypt给你证书的fullchain.pem路径;</span><br><span class="line">    ssl_certificate_key Let&apos;s Encrypt给你证书的privkey.pem路径;</span><br><span class="line">    ssl_protocols TLSv1 TLSv1.1 TLSv1.2;</span><br><span class="line">    proxy_set_header Host $host;</span><br><span class="line">    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</span><br><span class="line">    proxy_set_header X-Real-IP $remote_addr;</span><br><span class="line">    proxy_set_header X-Forwarded-Proto $scheme;</span><br><span class="line">    </span><br><span class="line">    location / &#123;</span><br><span class="line">        proxy_pass 对应机器路径;</span><br><span class="line">        proxy_http_version 1.1;</span><br><span class="line">        proxy_set_header Upgrade $http_upgrade;</span><br><span class="line">        proxy_set_header Connection &quot;upgrade&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">server &#123;</span><br><span class="line">    listen 80;</span><br><span class="line">    server_name 域名;</span><br><span class="line">    return 301 https://$host$request_url;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>启动</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run --name nginx -p 80:80 -p 443:443 -v /PathToConf:/etc/nginx -v /etc/letsencrypt:/etc/letsencrypt nginx</span><br></pre></td></tr></table></figure>
 
       
     </div>
@@ -346,11 +342,19 @@
           
             <a href="/tags/Spring/" rel="tag"># Spring</a>
           
-            <a href="/tags/ApplicationContext/" rel="tag"># ApplicationContext</a>
+            <a href="/tags/小程序/" rel="tag"># 小程序</a>
           
-            <a href="/tags/Spring-MVC/" rel="tag"># Spring MVC</a>
+            <a href="/tags/nginx/" rel="tag"># nginx</a>
           
-            <a href="/tags/Servlet/" rel="tag"># Servlet</a>
+            <a href="/tags/https/" rel="tag"># https</a>
+          
+            <a href="/tags/Websocket/" rel="tag"># Websocket</a>
+          
+            <a href="/tags/Docker/" rel="tag"># Docker</a>
+          
+            <a href="/tags/SpringBoot/" rel="tag"># SpringBoot</a>
+          
+            <a href="/tags/Let-s-Encrypt/" rel="tag"># Let's Encrypt</a>
           
         </div>
       
@@ -363,8 +367,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/06/05/scala与Spring-ResponseBody/" rel="next" title="scala与Spring ResponseBody">
-                <i class="fa fa-chevron-left"></i> scala与Spring ResponseBody
+              <a href="/2018/06/18/Scala-Test/" rel="next" title="Scala Test">
+                <i class="fa fa-chevron-left"></i> Scala Test
               </a>
             
           </div>
@@ -372,10 +376,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/06/14/Spring-Bean-Scope/" rel="prev" title="Spring Bean Scope">
-                Spring Bean Scope <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -432,8 +432,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -502,6 +511,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#https"><span class="nav-number">1.</span> <span class="nav-text">https</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Docker"><span class="nav-number">2.</span> <span class="nav-text">Docker</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Nginx"><span class="nav-number">3.</span> <span class="nav-text">Nginx</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
