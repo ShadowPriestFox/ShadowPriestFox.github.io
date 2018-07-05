@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Java,Spring,小程序,Token,JWT,cookie," />
+  <meta name="keywords" content="Tomcat,Java,Servlet,源码阅读,读书笔记," />
 
 
 
@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="之前有提到小程序不支持cookie,我们采用的是JWT来代替cookie。在最开始的时候是有讨论过两种方案的：  直接使用微信提供的unionId(openId) 使用token代替  两种方式各有优劣。首先使用unionId(openId)作为区分用户的标志，好处显而易见，非常简单，流程大概如下：  用户打开小程序，调用wx.login方法获取code。 将code发送至后端，后端通过微信提供的">
-<meta name="keywords" content="Java,Spring,小程序,Token,JWT,cookie">
+<meta name="description" content="最近业务比较少，可写的东西自然也就少了。只好偷懒开一个读书笔记的系列了。How Tomcat Works这本书真的很好，当然接下来的几篇文章应该都是和这个相关的，也不排除突然事情变多会写一些有内容的东西。 概览Tomcat是一个Servlet的容器，所以自然需要满足Servlet的标准，基本上需要做三件事：  创建一个Request对象，然后把Servlet可能需要的信息给填充好，当然这个Requ">
+<meta name="keywords" content="Tomcat,Java,Servlet,源码阅读,读书笔记">
 <meta property="og:type" content="article">
-<meta property="og:title" content="小程序与Token">
-<meta property="og:url" content="https://shadowpriestfox.github.io/2018/06/03/小程序与Token/index.html">
+<meta property="og:title" content="How Tomcat Works，一起读源码(一)">
+<meta property="og:url" content="https://shadowpriestfox.github.io/2018/07/05/How-Tomcat-Works，一起读源码-一/index.html">
 <meta property="og:site_name" content="夏都的博客">
-<meta property="og:description" content="之前有提到小程序不支持cookie,我们采用的是JWT来代替cookie。在最开始的时候是有讨论过两种方案的：  直接使用微信提供的unionId(openId) 使用token代替  两种方式各有优劣。首先使用unionId(openId)作为区分用户的标志，好处显而易见，非常简单，流程大概如下：  用户打开小程序，调用wx.login方法获取code。 将code发送至后端，后端通过微信提供的">
+<meta property="og:description" content="最近业务比较少，可写的东西自然也就少了。只好偷懒开一个读书笔记的系列了。How Tomcat Works这本书真的很好，当然接下来的几篇文章应该都是和这个相关的，也不排除突然事情变多会写一些有内容的东西。 概览Tomcat是一个Servlet的容器，所以自然需要满足Servlet的标准，基本上需要做三件事：  创建一个Request对象，然后把Servlet可能需要的信息给填充好，当然这个Requ">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-06-04T05:12:36.000Z">
+<meta property="og:updated_time" content="2018-07-05T13:49:26.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="小程序与Token">
-<meta name="twitter:description" content="之前有提到小程序不支持cookie,我们采用的是JWT来代替cookie。在最开始的时候是有讨论过两种方案的：  直接使用微信提供的unionId(openId) 使用token代替  两种方式各有优劣。首先使用unionId(openId)作为区分用户的标志，好处显而易见，非常简单，流程大概如下：  用户打开小程序，调用wx.login方法获取code。 将code发送至后端，后端通过微信提供的">
+<meta name="twitter:title" content="How Tomcat Works，一起读源码(一)">
+<meta name="twitter:description" content="最近业务比较少，可写的东西自然也就少了。只好偷懒开一个读书笔记的系列了。How Tomcat Works这本书真的很好，当然接下来的几篇文章应该都是和这个相关的，也不排除突然事情变多会写一些有内容的东西。 概览Tomcat是一个Servlet的容器，所以自然需要满足Servlet的标准，基本上需要做三件事：  创建一个Request对象，然后把Servlet可能需要的信息给填充好，当然这个Requ">
 
 
 
@@ -120,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="https://shadowpriestfox.github.io/2018/06/03/小程序与Token/"/>
+  <link rel="canonical" href="https://shadowpriestfox.github.io/2018/07/05/How-Tomcat-Works，一起读源码-一/"/>
 
 
 
 
 
-  <title>小程序与Token | 夏都的博客</title>
+  <title>How Tomcat Works，一起读源码(一) | 夏都的博客</title>
   
 
 
@@ -243,7 +243,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://shadowpriestfox.github.io/2018/06/03/小程序与Token/">
+    <link itemprop="mainEntityOfPage" href="https://shadowpriestfox.github.io/2018/07/05/How-Tomcat-Works，一起读源码-一/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Shadow Priest">
@@ -260,7 +260,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">小程序与Token</h1>
+          <h1 class="post-title" itemprop="name headline">How Tomcat Works，一起读源码(一)</h1>
         
 
         <div class="post-meta">
@@ -272,8 +272,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-06-03T22:35:46+08:00">
-                2018-06-03
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-07-05T00:04:20+08:00">
+                2018-07-05
               </time>
             
 
@@ -310,33 +310,31 @@
       
 
       
-        <p>之前有提到小程序不支持cookie,我们采用的是JWT来代替cookie。<br>在最开始的时候是有讨论过两种方案的：</p>
+        <p>最近业务比较少，可写的东西自然也就少了。只好偷懒开一个读书笔记的系列了。<a href="https://www.amazon.com/How-Tomcat-Works-Developing-Container/dp/097521280X" target="_blank" rel="noopener">How Tomcat Works</a>这本书真的很好，当然接下来的几篇文章应该都是和这个相关的，也不排除突然事情变多会写一些有内容的东西。</p>
+<h2 id="概览"><a href="#概览" class="headerlink" title="概览"></a>概览</h2><p>Tomcat是一个Servlet的容器，所以自然需要满足Servlet的标准，基本上需要做三件事：</p>
 <ol>
-<li>直接使用微信提供的unionId(openId)</li>
-<li>使用token代替</li>
+<li>创建一个Request对象，然后把Servlet可能需要的信息给填充好，当然这个Request对象得实现<code>javax.servlet.ServletRequest</code> 或者<code>javax.servlet.http.ServletRequest</code> 接口</li>
+<li>创建一个Response对象，Servlet需要用这个对象来给用户回消息，同样的Response对象得实现<code>javax.servlet.ServletRequest</code> 或者 <code>javax.servlet.http.ServletResponse</code> 接口</li>
+<li>调用servlet的service方法将request和response传给servlet</li>
 </ol>
-<p>两种方式各有优劣。<br>首先使用unionId(openId)作为区分用户的标志，好处显而易见，非常简单，流程大概如下：</p>
+<h3 id="Catalina架构"><a href="#Catalina架构" class="headerlink" title="Catalina架构"></a>Catalina架构</h3><p>可以把Catalina看成是由Connector和Container组成的。Connector负责将请求转换成request和response，并使用servlet的service方法来响应请求。</p>
+<h2 id="第一章"><a href="#第一章" class="headerlink" title="第一章"></a>第一章</h2><p>第一章讲的东西很简单，就是构建一个监听某个端口的ServerSocket。当请求到达时，对请求的内容进行parse。主要得到URI，然后根据URI去访问webroot中对应的静态文件，然后写回给请求方。这样就完成了一个静态资源服务器。源码中响应只是把静态资源直接写回，并没有按照HTTP协议写回。所以直接使用浏览器访问可能会有问题。可以使用curl来访问是可以拿到正确结果的。</p>
+<h2 id="第二章"><a href="#第二章" class="headerlink" title="第二章"></a>第二章</h2><p>第二章实现了一个Servlet,然后根据url里是否包含/servlet/来判定是否调用对应的Servlet的service方法</p>
+<p>第二章的服务器在第一章的基础上做了以下几个扩展：</p>
 <ol>
-<li>用户打开小程序，调用wx.login方法获取code。</li>
-<li>将code发送至后端，后端通过微信提供的API换取用户的unionId(openId)</li>
-<li>将换取到的unionId(openId)传回至小程序端保存下来</li>
-<li>每次请求后端数据时带上该Id</li>
+<li>将Request和Response分别实现ServletRequest和ServletResponse使之能作为servlet的service参数传递</li>
+<li>创建了一个专门用于创建servlet的processor。每次请求过来的时候在该processor里根据名称新生成一个servlet然后调用其service方法来响应请求</li>
+<li>对request和response创建了对应的facade为了防止他们的parse方法被调用</li>
 </ol>
-<p>几乎不需要自己做额外的操作。唯一要做的是后端需要提供一个提交code换取unionId(openId)的接口。<br>缺点：</p>
+<h2 id="第三章"><a href="#第三章" class="headerlink" title="第三章"></a>第三章</h2><p>从这一章开始源码就开始有很清楚的模块划分了。这一章主要由三个模块构成：</p>
 <ol>
-<li>后端提供的接口没法校验前端的请求是否是真的用户。另外还好小程序是强制要求https的。不然拿着用户id这么来回传很容易就泄露了。(在平时面试中还遇到有说把unionId作为一个pram放到url里的。。)</li>
-<li>无法做多平台扩展，如果以后加入App端。后续的校验，以及分多渠道做起来会比较恶心。</li>
-<li>无法过期。一般来说cookie是会有过期时间的。。但使用id的话将没法过期。</li>
+<li>connector</li>
+<li>startup</li>
+<li>core</li>
 </ol>
-<p>考虑到以上这些最后还是决定使用token来代替cookie。<br>既然使用token的话就使用比较有名的<a href="https://jwt.io" target="_blank" rel="noopener">JWT</a>好了。库比较多，用起来也很简单，大体流程如下：</p>
-<ol>
-<li>用户打开小程序，调用wx.login方法获取code。</li>
-<li>将code发送至后端，后端通过微信提供的API获取用户的unionId(openId)</li>
-<li>将换取到的unionId(openId)以及你想加入的相关的东西加入到相应的payload中通过JWT相应的加密算法得到Token</li>
-<li>将Token放置在response Header中的Authorization: Bearer {token}中返回给小程序端</li>
-<li>小程序端保留此token，每次请求的时候也将其放置在Authorization: Bearer 中发送给后端进行校验 </li>
-</ol>
-<p>这里具体实现的时候大概是这样的，首先对于需要做认证的接口加入interceptor。在<code>preHandle</code> 中进行校验，如果说在返回结果时同时将更新的token传至前端不能在interceptor中添加header，因为此时response已经在<code>HandlerAdapter</code>中被提交，如果说需要修改header需要实现<code>ResponseBodyAdvice</code>并声明为一个<code>Controller Advice</code><a href="https://docs.spring.io/spring/docs/5.0.6.RELEASE/spring-framework-reference/web.html#mvc-handlermapping-interceptor" target="_blank" rel="noopener">文档这里有提到相关信息</a></p>
+<p>相对于第二章启动类已经不再是由HttpServer启动了。而是改为了使用Bootstrap启动。</p>
+<p>HttpServer也被拆分成了HttpConnector和HttpProcessor。在本章中HttpConnector负责等待Http请求进入。而HttpProcessor负责创建Request和Response然后交给core包含的ServletProcessor或者StaticResourceProcessor来处理。在创建Request过程中Http请求并不会完全解析只会解析请求行和头部，请求内容和请求字符串的参数将交由Request自己去解析(会在servlet需要的时候才会去解析)</p>
+<p>同样的在交由servlet处理前Request和Response都会被对应的Facade包装。以隐藏那些parse方法</p>
 
       
     </div>
@@ -354,17 +352,15 @@
       
         <div class="post-tags">
           
+            <a href="/tags/Tomcat/" rel="tag"># Tomcat</a>
+          
             <a href="/tags/Java/" rel="tag"># Java</a>
           
-            <a href="/tags/Spring/" rel="tag"># Spring</a>
+            <a href="/tags/Servlet/" rel="tag"># Servlet</a>
           
-            <a href="/tags/小程序/" rel="tag"># 小程序</a>
+            <a href="/tags/源码阅读/" rel="tag"># 源码阅读</a>
           
-            <a href="/tags/Token/" rel="tag"># Token</a>
-          
-            <a href="/tags/JWT/" rel="tag"># JWT</a>
-          
-            <a href="/tags/cookie/" rel="tag"># cookie</a>
+            <a href="/tags/读书笔记/" rel="tag"># 读书笔记</a>
           
         </div>
       
@@ -377,8 +373,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/06/01/小程序与STOMP/" rel="next" title="小程序与Websocket">
-                <i class="fa fa-chevron-left"></i> 小程序与Websocket
+              <a href="/2018/07/01/小程序后端环境搭建/" rel="next" title="小程序后端环境搭建">
+                <i class="fa fa-chevron-left"></i> 小程序后端环境搭建
               </a>
             
           </div>
@@ -386,10 +382,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/06/05/scala与Spring-ResponseBody/" rel="prev" title="scala与Spring ResponseBody">
-                scala与Spring ResponseBody <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -446,8 +438,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -516,6 +517,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#概览"><span class="nav-number">1.</span> <span class="nav-text">概览</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Catalina架构"><span class="nav-number">1.1.</span> <span class="nav-text">Catalina架构</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第一章"><span class="nav-number">2.</span> <span class="nav-text">第一章</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第二章"><span class="nav-number">3.</span> <span class="nav-text">第二章</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第三章"><span class="nav-number">4.</span> <span class="nav-text">第三章</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
