@@ -317,10 +317,19 @@
 <p>tomcat连接器必须做到以下几点：</p>
 <ol>
 <li>实现Connector接口</li>
-<li>必须创建Request对象，这个对象必须实现<figure class="highlight plain"><figcaption><span>接口</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">3. 必须创建Response对象，这个对象必须实现```org.apache.catalina.Response``` 接口</span><br><span class="line"></span><br><span class="line">这一章的连接器会调用Container的invoke方法来传递Request和Response对象</span><br><span class="line"></span><br><span class="line">这一章使用了```org.apache.catalina.connector.http``` 的HttpConnector实现了Connector,Lifecycle,Runnable三个接口。</span><br><span class="line"></span><br><span class="line">ServerSocket由HttpConnector的open方法创建，而这个open方法是从ServerSocketFactory中获取的一个serverSocket。</span><br><span class="line"></span><br><span class="line">HttpConnector维护了一个HttpProcessor的池子。</span><br><span class="line"></span><br><span class="line">Connector主要逻辑在run中(就是Thread的run),serverSocket的阻塞获取消息放在Connector中，当有请求到达时，会继续到createProcessor。此时会去池中获取(创建)一个新的HttpProcessor。然后调用processor的assign方法。这里的assign是立刻返回的。Processor会在另外一个线程完成解析工作。</span><br><span class="line"></span><br><span class="line">最后是Processor的process方法，也就是请求处理：</span><br><span class="line"></span><br><span class="line">- 解析链接```parseConnecttion</span><br></pre></td></tr></table></figure></li>
+<li>必须创建Request对象，这个对象必须实现org.apache.catalina.Request</li>
+<li>必须创建Response对象，这个对象必须实现org.apache.catalina.Response</li>
 </ol>
+<p>这一章的连接器会调用Container的invoke方法来传递Request和Response对象</p>
+<p>这一章使用了org.apache.catalina.connector.http的HttpConnector实现了Connector,Lifecycle,Runnable三个接口。</p>
+<p>ServerSocket由HttpConnector的open方法创建，而这个open方法是从ServerSocketFactory中获取的一个serverSocket。</p>
+<p>HttpConnector维护了一个HttpProcessor的池子。</p>
+<p>Connector主要逻辑在run中(就是Thread的run),serverSocket的阻塞获取消息放在Connector中，当有请求到达时，会继续到createProcessor。此时会去池中获取(创建)一个新的HttpProcessor。然后调用processor的assign方法。这里的assign是立刻返回的。Processor会在另外一个线程完成解析工作。</p>
+<p>最后是Processor的process方法，也就是请求处理：</p>
 <ul>
-<li>解析请求<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- 解析头部```parseHeader</span><br></pre></td></tr></table></figure></li>
+<li>解析链接parseConnecttion</li>
+<li>解析请求parseRequest</li>
+<li>解析头部parseHeader</li>
 </ul>
 <p>如果在解析过程成中没有出错的话则会通过connector调用container的invoke方法来响应这一次请求。</p>
 <p>总体来说默认连接器在Connector与Processor分别启用了新的线程来处理连接和解析请求以及响应。这样达到了异步的目的。</p>
