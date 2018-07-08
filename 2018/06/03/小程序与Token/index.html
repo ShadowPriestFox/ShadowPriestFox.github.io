@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="夏都的博客">
 <meta property="og:description" content="之前有提到小程序不支持cookie,我们采用的是JWT来代替cookie。在最开始的时候是有讨论过两种方案的：  直接使用微信提供的unionId(openId) 使用token代替  两种方式各有优劣。首先使用unionId(openId)作为区分用户的标志，好处显而易见，非常简单，流程大概如下：  用户打开小程序，调用wx.login方法获取code。 将code发送至后端，后端通过微信提供的">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-06-04T05:12:36.000Z">
+<meta property="og:updated_time" content="2018-07-08T12:50:00.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="小程序与Token">
 <meta name="twitter:description" content="之前有提到小程序不支持cookie,我们采用的是JWT来代替cookie。在最开始的时候是有讨论过两种方案的：  直接使用微信提供的unionId(openId) 使用token代替  两种方式各有优劣。首先使用unionId(openId)作为区分用户的标志，好处显而易见，非常简单，流程大概如下：  用户打开小程序，调用wx.login方法获取code。 将code发送至后端，后端通过微信提供的">
@@ -332,7 +332,7 @@
 <ol>
 <li>用户打开小程序，调用wx.login方法获取code。</li>
 <li>将code发送至后端，后端通过微信提供的API获取用户的unionId(openId)</li>
-<li>将换取到的unionId(openId)以及你想加入的相关的东西加入到相应的payload中通过JWT相应的加密算法得到Token</li>
+<li>将换取到的unionId(openId)进行加密以及你想加入的相关的非敏感信息加入到相应的payload中通过JWT相应的加密算法得到Token。JWT的payload只会进行base64并不会加密，所以不要放敏感信息。</li>
 <li>将Token放置在response Header中的Authorization: Bearer {token}中返回给小程序端</li>
 <li>小程序端保留此token，每次请求的时候也将其放置在Authorization: Bearer 中发送给后端进行校验 </li>
 </ol>
@@ -466,7 +466,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-count">10</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
