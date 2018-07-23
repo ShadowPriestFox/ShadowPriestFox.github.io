@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="scala,Spring,ResponseBody,Jackson," />
+  <meta name="keywords" content="Tomcat,Java,Servlet,源码阅读,读书笔记," />
 
 
 
@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="在使用scala和Spring 实现RESTful接口过程中难免会遇到有返回Map的时候，如果是只简单的返回一个Map给Spring，是没办法将其自动转换成json数据返回到前端的。主要问题在Spring默认的MappingJackson2HttpMessageConverter的ObjectMapper不支持scala对象，所以我们只需要提供一个可以转换scala对象的MappingJackso">
-<meta name="keywords" content="scala,Spring,ResponseBody,Jackson">
+<meta name="description" content="第五章本章主要讲的就是tomcat的容器啦，一共有四种容器：  Engine：表示整个Catalina的servlet引擎 Host：表示拥有数个上下文的虚拟机 Context：表示一个Web应用，包含多个Wrapper Wrapper:表示一个servlet  他们都实现了org.apache.catalina.Container接口 这一章主要讲Context和Wrapper。而Engine和">
+<meta name="keywords" content="Tomcat,Java,Servlet,源码阅读,读书笔记">
 <meta property="og:type" content="article">
-<meta property="og:title" content="scala与Spring ResponseBody">
-<meta property="og:url" content="https://shadowpriestfox.github.io/2018/06/05/scala与Spring-ResponseBody/index.html">
+<meta property="og:title" content="How-Tomcat-works，一起读源码-三">
+<meta property="og:url" content="https://shadowpriestfox.github.io/2018/07/21/How-Tomcat-works，一起读源码-三/index.html">
 <meta property="og:site_name" content="夏都的博客">
-<meta property="og:description" content="在使用scala和Spring 实现RESTful接口过程中难免会遇到有返回Map的时候，如果是只简单的返回一个Map给Spring，是没办法将其自动转换成json数据返回到前端的。主要问题在Spring默认的MappingJackson2HttpMessageConverter的ObjectMapper不支持scala对象，所以我们只需要提供一个可以转换scala对象的MappingJackso">
+<meta property="og:description" content="第五章本章主要讲的就是tomcat的容器啦，一共有四种容器：  Engine：表示整个Catalina的servlet引擎 Host：表示拥有数个上下文的虚拟机 Context：表示一个Web应用，包含多个Wrapper Wrapper:表示一个servlet  他们都实现了org.apache.catalina.Container接口 这一章主要讲Context和Wrapper。而Engine和">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-06-05T14:58:02.000Z">
+<meta property="og:updated_time" content="2018-07-21T14:49:08.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="scala与Spring ResponseBody">
-<meta name="twitter:description" content="在使用scala和Spring 实现RESTful接口过程中难免会遇到有返回Map的时候，如果是只简单的返回一个Map给Spring，是没办法将其自动转换成json数据返回到前端的。主要问题在Spring默认的MappingJackson2HttpMessageConverter的ObjectMapper不支持scala对象，所以我们只需要提供一个可以转换scala对象的MappingJackso">
+<meta name="twitter:title" content="How-Tomcat-works，一起读源码-三">
+<meta name="twitter:description" content="第五章本章主要讲的就是tomcat的容器啦，一共有四种容器：  Engine：表示整个Catalina的servlet引擎 Host：表示拥有数个上下文的虚拟机 Context：表示一个Web应用，包含多个Wrapper Wrapper:表示一个servlet  他们都实现了org.apache.catalina.Container接口 这一章主要讲Context和Wrapper。而Engine和">
 
 
 
@@ -120,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="https://shadowpriestfox.github.io/2018/06/05/scala与Spring-ResponseBody/"/>
+  <link rel="canonical" href="https://shadowpriestfox.github.io/2018/07/21/How-Tomcat-works，一起读源码-三/"/>
 
 
 
 
 
-  <title>scala与Spring ResponseBody | 夏都的博客</title>
+  <title>How-Tomcat-works，一起读源码-三 | 夏都的博客</title>
   
 
 
@@ -243,7 +243,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://shadowpriestfox.github.io/2018/06/05/scala与Spring-ResponseBody/">
+    <link itemprop="mainEntityOfPage" href="https://shadowpriestfox.github.io/2018/07/21/How-Tomcat-works，一起读源码-三/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Shadow Priest">
@@ -260,7 +260,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">scala与Spring ResponseBody</h1>
+          <h1 class="post-title" itemprop="name headline">How-Tomcat-works，一起读源码-三</h1>
         
 
         <div class="post-meta">
@@ -272,8 +272,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-06-05T13:11:26+08:00">
-                2018-06-05
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-07-21T21:20:57+08:00">
+                2018-07-21
               </time>
             
 
@@ -310,9 +310,31 @@
       
 
       
-        <p>在使用scala和Spring 实现RESTful接口过程中难免会遇到有返回Map的时候，如果是只简单的返回一个Map给Spring，是没办法将其自动转换成json数据返回到前端的。主要问题在Spring默认的<code>MappingJackson2HttpMessageConverter</code>的<code>ObjectMapper</code>不支持scala对象，所以我们只需要提供一个可以转换scala对象的<code>MappingJackson2HttpMessageConverter</code>就好了。具体代码如下：</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> com.fasterxml.jackson.databind.<span class="type">ObjectMapper</span></span><br><span class="line"><span class="keyword">import</span> com.fasterxml.jackson.module.scala.<span class="type">DefaultScalaModule</span></span><br><span class="line"><span class="keyword">import</span> com.fasterxml.jackson.module.scala.experimental.<span class="type">ScalaObjectMapper</span></span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.&#123;<span class="type">Bean</span>, <span class="type">Configuration</span>&#125;</span><br><span class="line"><span class="keyword">import</span> org.springframework.http.converter.json.<span class="type">MappingJackson2HttpMessageConverter</span></span><br><span class="line"></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ConverterConfig</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@Bean</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">converter</span></span>: <span class="type">MappingJackson2HttpMessageConverter</span> = &#123;</span><br><span class="line">    <span class="keyword">val</span> mapper = <span class="keyword">new</span> <span class="type">ObjectMapper</span> <span class="keyword">with</span> <span class="type">ScalaObjectMapper</span></span><br><span class="line">    mapper.registerModule(<span class="type">DefaultScalaModule</span>)</span><br><span class="line">    <span class="keyword">val</span> converter = <span class="keyword">new</span> <span class="type">MappingJackson2HttpMessageConverter</span>(mapper)</span><br><span class="line">    converter</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这里需要提一下的是,使用了jackson-module-scala_2.12用来将scala的相关类型Map,Tuple等，转换成json</p>
+        <h2 id="第五章"><a href="#第五章" class="headerlink" title="第五章"></a>第五章</h2><p>本章主要讲的就是tomcat的容器啦，一共有四种容器：</p>
+<ul>
+<li>Engine：表示整个Catalina的servlet引擎</li>
+<li>Host：表示拥有数个上下文的虚拟机</li>
+<li>Context：表示一个Web应用，包含多个Wrapper</li>
+<li>Wrapper:表示一个servlet</li>
+</ul>
+<p>他们都实现了org.apache.catalina.Container接口</p>
+<p>这一章主要讲Context和Wrapper。而Engine和Host会在后续的章节中来讲解</p>
+<p>当connector调用invoke方法后，request和response将进入到Container中进行处理。</p>
+<h3 id="Wrapper"><a href="#Wrapper" class="headerlink" title="Wrapper"></a>Wrapper</h3><p>Wrapper将通过pipeline以及一系列的阀门来处理request和response。</p>
+<p>pipeline则表示了容器所有要执行的任务，每一个任务将由一个Valve来表示，每一个pipeline有一个basic的valve，pipeline工作模式和servlet的过滤器(filter)有些类似，由一个个的valve串行来执行。</p>
+<p>这里采用了一个与正常思路不太一样的方式来实现这个pipeline的invoke过程。</p>
+<p>一般来说串行执行valve会用这种思路来写</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> n=<span class="number">0</span>;n&lt;valves.length;n++)&#123;</span><br><span class="line">    valve[n].invoke(...);</span><br><span class="line">&#125;</span><br><span class="line">basic.invoke</span><br></pre></td></tr></table></figure>
+<p>然而tomcat则不是这么实现的。</p>
+<p>tomcat通过创建一个ValveContext来实现这整个流程。</p>
+<p>在进入pipeline的invoke后，会调用ValveContext的invokeNext来调用Valve的invoke。而当每一个Valve的invoke调用之前都会调用ValveContext的invokeNext直到调用至basicValve为止。简单来说调用顺序是这样</p>
+<p>valves.add(valve1)</p>
+<p>valves.add(valve2)</p>
+<p>wrapprer.invoke-&gt;ValveContext.invokeNext-&gt;valve1.invoke-&gt;ValveContext.invokeNext-&gt;valve2.invoke-&gt;ValveContext.invokeNext-&gt;basicValve.inoke-&gt;处理basickValve任务-&gt;处理valve2任务-&gt;处理valve1任务-&gt;结束。</p>
+<p>这里还有一个loader会放在后面一起讲。</p>
+<h3 id="Context"><a href="#Context" class="headerlink" title="Context"></a>Context</h3><p>一个Context可以包含多个Wrapper而一个Wrapper则不能再加任何子container。</p>
+<p>Context可以包含多个Wrapper也就是会有多个Servlet可以处理request和response。则需要一个数据结构来查询到底哪个子Container可以用来处理当前的request和response，tomcat 4种实用的是一个Mapper的数据结构。</p>
+<p>而在Context的basickValve中会使用这个mapper来决定最终数据会交给哪个Wrapper来处理。所以大体流程就是先由Context的pipeline处理，然后会在basicValve中调用对应Wrapper的invoke交由Wrapper的pipeline处理。</p>
 
       
     </div>
@@ -330,13 +352,15 @@
       
         <div class="post-tags">
           
-            <a href="/tags/scala/" rel="tag"># scala</a>
+            <a href="/tags/Tomcat/" rel="tag"># Tomcat</a>
           
-            <a href="/tags/Spring/" rel="tag"># Spring</a>
+            <a href="/tags/Java/" rel="tag"># Java</a>
           
-            <a href="/tags/ResponseBody/" rel="tag"># ResponseBody</a>
+            <a href="/tags/Servlet/" rel="tag"># Servlet</a>
           
-            <a href="/tags/Jackson/" rel="tag"># Jackson</a>
+            <a href="/tags/源码阅读/" rel="tag"># 源码阅读</a>
+          
+            <a href="/tags/读书笔记/" rel="tag"># 读书笔记</a>
           
         </div>
       
@@ -349,8 +373,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/06/03/小程序与Token/" rel="next" title="小程序与Token">
-                <i class="fa fa-chevron-left"></i> 小程序与Token
+              <a href="/2018/07/12/scala与DI——蛋糕模式/" rel="next" title="scala与DI——蛋糕模式">
+                <i class="fa fa-chevron-left"></i> scala与DI——蛋糕模式
               </a>
             
           </div>
@@ -358,10 +382,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/06/13/Spring-MVC的context/" rel="prev" title="Spring MVC的context">
-                Spring MVC的context <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -418,8 +438,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -488,6 +517,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#第五章"><span class="nav-number">1.</span> <span class="nav-text">第五章</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Wrapper"><span class="nav-number">1.1.</span> <span class="nav-text">Wrapper</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Context"><span class="nav-number">1.2.</span> <span class="nav-text">Context</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
