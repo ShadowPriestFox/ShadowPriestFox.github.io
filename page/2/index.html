@@ -242,6 +242,152 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://shadowpriestfox.github.io/2018/06/03/小程序与Token/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Shadow Priest">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="夏都的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/06/03/小程序与Token/" itemprop="url">小程序与Token</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-06-03T22:35:46+08:00">
+                2018-06-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>之前有提到小程序不支持cookie,我们采用的是JWT来代替cookie。<br>在最开始的时候是有讨论过两种方案的：</p>
+<ol>
+<li>直接使用微信提供的unionId(openId)</li>
+<li>使用token代替</li>
+</ol>
+<p>两种方式各有优劣。<br>首先使用unionId(openId)作为区分用户的标志，好处显而易见，非常简单，流程大概如下：</p>
+<ol>
+<li>用户打开小程序，调用wx.login方法获取code。</li>
+<li>将code发送至后端，后端通过微信提供的API换取用户的unionId(openId)</li>
+<li>将换取到的unionId(openId)传回至小程序端保存下来</li>
+<li>每次请求后端数据时带上该Id</li>
+</ol>
+<p>几乎不需要自己做额外的操作。唯一要做的是后端需要提供一个提交code换取unionId(openId)的接口。<br>缺点：</p>
+<ol>
+<li>后端提供的接口没法校验前端的请求是否是真的用户。另外还好小程序是强制要求https的。不然拿着用户id这么来回传很容易就泄露了。(在平时面试中还遇到有说把unionId作为一个pram放到url里的。。)</li>
+<li>无法做多平台扩展，如果以后加入App端。后续的校验，以及分多渠道做起来会比较恶心。</li>
+<li>无法过期。一般来说cookie是会有过期时间的。。但使用id的话将没法过期。</li>
+</ol>
+<p>考虑到以上这些最后还是决定使用token来代替cookie。<br>既然使用token的话就使用比较有名的<a href="https://jwt.io" target="_blank" rel="noopener">JWT</a>好了。库比较多，用起来也很简单，大体流程如下：</p>
+<ol>
+<li>用户打开小程序，调用wx.login方法获取code。</li>
+<li>将code发送至后端，后端通过微信提供的API获取用户的unionId(openId)</li>
+<li>将换取到的unionId(openId)进行加密以及你想加入的相关的非敏感信息加入到相应的payload中通过JWT相应的加密算法得到Token。JWT的payload只会进行base64并不会加密，所以不要放敏感信息。</li>
+<li>将Token放置在response Header中的Authorization: Bearer {token}中返回给小程序端</li>
+<li>小程序端保留此token，每次请求的时候也将其放置在Authorization: Bearer 中发送给后端进行校验 </li>
+</ol>
+<p>这里具体实现的时候大概是这样的，首先对于需要做认证的接口加入interceptor。在<code>preHandle</code> 中进行校验，如果说在返回结果时同时将更新的token传至前端不能在interceptor中添加header，因为此时response已经在<code>HandlerAdapter</code>中被提交，如果说需要修改header需要实现<code>ResponseBodyAdvice</code>并声明为一个<code>Controller Advice</code><a href="https://docs.spring.io/spring/docs/5.0.6.RELEASE/spring-framework-reference/web.html#mvc-handlermapping-interceptor" target="_blank" rel="noopener">文档这里有提到相关信息</a></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://shadowpriestfox.github.io/2018/06/01/小程序与STOMP/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -557,7 +703,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-count">13</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -570,7 +716,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">27</span>
+                  <span class="site-state-item-count">29</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>

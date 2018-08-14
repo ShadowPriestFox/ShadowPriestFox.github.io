@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="ShadowPriest, FP" />
+  <meta name="keywords" content="scala,范型," />
 
 
 
@@ -79,16 +79,18 @@
 
 
 
-<meta name="description" content="一个用scala写业务的奇葩，懂一点后端，懂一点前端。希望有一天能不是迫于生计去写代码而是为了自己的梦想。">
-<meta property="og:type" content="website">
-<meta property="og:title" content="夏都的博客">
-<meta property="og:url" content="https://shadowpriestfox.github.io/tags/Bean-Scope/index.html">
+<meta name="description" content="先从概念入手吧， 如果A是B的子类则记为A:&amp;lt;B 如果A是B的父类则记为A:&amp;gt;B 协变(covariant): 如果有A:&amp;lt;B且范型G[A]&amp;lt;:G[B] 则称之为协变 文字版描述：如果说A是B的子类且G[A]是G[B]的子类，则我们称这种情况是协变 逆变(contravariant) 如果有A:&amp;lt;B 且范型 G[A]&amp;gt;:G[B] 则称之为逆变 另外，如果A:&amp;l">
+<meta name="keywords" content="scala,范型">
+<meta property="og:type" content="article">
+<meta property="og:title" content="逆变与协变">
+<meta property="og:url" content="https://shadowpriestfox.github.io/2018/07/31/逆变与协变/index.html">
 <meta property="og:site_name" content="夏都的博客">
-<meta property="og:description" content="一个用scala写业务的奇葩，懂一点后端，懂一点前端。希望有一天能不是迫于生计去写代码而是为了自己的梦想。">
+<meta property="og:description" content="先从概念入手吧， 如果A是B的子类则记为A:&amp;lt;B 如果A是B的父类则记为A:&amp;gt;B 协变(covariant): 如果有A:&amp;lt;B且范型G[A]&amp;lt;:G[B] 则称之为协变 文字版描述：如果说A是B的子类且G[A]是G[B]的子类，则我们称这种情况是协变 逆变(contravariant) 如果有A:&amp;lt;B 且范型 G[A]&amp;gt;:G[B] 则称之为逆变 另外，如果A:&amp;l">
 <meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-08-14T15:19:14.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="夏都的博客">
-<meta name="twitter:description" content="一个用scala写业务的奇葩，懂一点后端，懂一点前端。希望有一天能不是迫于生计去写代码而是为了自己的梦想。">
+<meta name="twitter:title" content="逆变与协变">
+<meta name="twitter:description" content="先从概念入手吧， 如果A是B的子类则记为A:&amp;lt;B 如果A是B的父类则记为A:&amp;gt;B 协变(covariant): 如果有A:&amp;lt;B且范型G[A]&amp;lt;:G[B] 则称之为协变 文字版描述：如果说A是B的子类且G[A]是G[B]的子类，则我们称这种情况是协变 逆变(contravariant) 如果有A:&amp;lt;B 且范型 G[A]&amp;gt;:G[B] 则称之为逆变 另外，如果A:&amp;l">
 
 
 
@@ -118,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="https://shadowpriestfox.github.io/tags/Bean-Scope/"/>
+  <link rel="canonical" href="https://shadowpriestfox.github.io/2018/07/31/逆变与协变/"/>
 
 
 
 
 
-  <title>Tag: Bean Scope | 夏都的博客</title>
+  <title>逆变与协变 | 夏都的博客</title>
   
 
 
@@ -143,7 +145,7 @@
     
   
 
-  <div class="container sidebar-position-left ">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -227,54 +229,174 @@
           <div id="content" class="content">
             
 
-  
-  
-  
-  <div class="post-block tag">
+  <div id="posts" class="posts-expand">
+    
 
-    <div id="posts" class="posts-collapse">
-      <div class="collection-title">
-        <h1>Bean Scope<small>Tag</small>
-        </h1>
-      </div>
+  
 
-      
-        
+  
+  
+  
 
   <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://shadowpriestfox.github.io/2018/07/31/逆变与协变/">
 
-      <h2 class="post-title">
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Shadow Priest">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="夏都的博客">
+    </span>
+
+    
+      <header class="post-header">
+
         
-            <a class="post-title-link" href="/2018/06/14/Spring-Bean-Scope/" itemprop="url">
-              
-                <span itemprop="name">Spring Bean Scope</span>
-              
-            </a>
         
-      </h2>
+          <h1 class="post-title" itemprop="name headline">逆变与协变</h1>
+        
 
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2018-06-14T22:38:19+08:00"
-              content="2018-06-14" >
-          06-14
-        </time>
-      </div>
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-07-31T21:29:01+08:00">
+                2018-07-31
+              </time>
+            
 
-    </header>
-  </article>
+            
 
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>先从概念入手吧，</p>
+<p>如果A是B的子类则记为A:&lt;B</p>
+<p>如果A是B的父类则记为A:&gt;B</p>
+<p>协变(covariant):</p>
+<p>如果有A:&lt;B且范型G[A]&lt;:G[B]</p>
+<p>则称之为协变</p>
+<p>文字版描述：如果说A是B的子类且G[A]是G[B]的子类，则我们称这种情况是协变</p>
+<p>逆变(contravariant)</p>
+<p>如果有A:&lt;B 且范型 G[A]&gt;:G[B]</p>
+<p>则称之为逆变</p>
+<p>另外，如果A:&lt;B且范型G[A]和G[B]没有关系。则称之为不变</p>
+<p>那么协变，逆变有什么用呢，我们来看Java设计里的一个失误：</p>
+<p>在Java里数组是协变的，而List则是不变的</p>
+<p>也就是说如果有一个父类Father和一个子类Child</p>
+<p>在Java里Child[] :&lt; Father[]而 List&lt;Child&gt;和List &lt;Father&gt; 就毫无关系</p>
+<p>Java数组上设计有一个漏洞，导致以下代码可以通过编译，但会有运行时错误</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Object[] a = <span class="keyword">new</span> Integer[<span class="number">1</span>];</span><br><span class="line">a[<span class="number">0</span>] = <span class="string">"hello"</span>;</span><br></pre></td></tr></table></figure>
+<p>然而当你写</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">List&lt;Object&gt; a = <span class="keyword">new</span> ArrayList&lt;Integer&gt;();</span><br></pre></td></tr></table></figure>
+<p>就会通不过编译</p>
+<p>原因就是上面说过的java的Array是协变的而List是不变的</p>
+<p>然而在scala中List是协变的Array是不变的。</p>
+<p>为什么scala的List是协变却不会有上述问题呢。因为scala的List是immutable的。</p>
+<p>当然如果说刻意的去构造一个能通过编译但会有运行时问题的代码也是存在的。</p>
+<p>一般来说我们写代码不用刻意去考虑逆变和协变的问题。因为在使用scala时，大部分情况编译器会帮我们考虑。一旦我们的代码会出现类似java 数组这种问题时，编译器是能检测出来的。所以这一部分不用太担心。当然我们在设计一些范型的时候也有一些原则可以参考。</p>
+<p>一个很重要的原则就是<a href="https://en.wikipedia.org/wiki/Liskov_substitution_principle" target="_blank" rel="noopener">Liskov Substitution Principle</a> 如果在任何需要类型U的值的地方，都能用类型T的值替换，那么就可以安全地假定类型T是类型U的子类型。</p>
 
       
     </div>
+    
+    
+    
 
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/scala/" rel="tag"># scala</a>
+          
+            <a href="/tags/范型/" rel="tag"># 范型</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/07/21/How-Tomcat-works，一起读源码-三/" rel="next" title="How-Tomcat-works，一起读源码-三">
+                <i class="fa fa-chevron-left"></i> How-Tomcat-works，一起读源码-三
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
   </div>
   
   
   
+  </article>
 
-  
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
@@ -282,6 +404,15 @@
 
 
           
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zNzAwMC8xMzUzNg=="></div>
+    </div>
+
+  
+
+
 
         </div>
         
@@ -505,6 +636,10 @@
   
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
 
   
 
@@ -533,6 +668,17 @@
 
 
 
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
   
 
 
