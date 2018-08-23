@@ -252,6 +252,162 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://shadowpriestfox.github.io/2018/08/21/一个创业公司CI-CD的演化-一-——GitLab-Runner/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Shadow Priest">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="夏都的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/08/21/一个创业公司CI-CD的演化-一-——GitLab-Runner/" itemprop="url">一个创业公司CI&CD的演化(一)——GitLab Runner</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-08-21T00:18:21+08:00">
+                2018-08-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2018/08/21/一个创业公司CI-CD的演化-一-——GitLab-Runner/" class="leancloud_visitors" data-flag-title="一个创业公司CI&CD的演化(一)——GitLab Runner">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">Visitors&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>开个新坑,这个系列会着重讲一个小公司的IT运维现状,以及未来可能的规划,毕竟我说了不算.如果不执行很可能就不写了…</p>
+<p>先说现状吧:</p>
+<p>创业公司号称需要快速实现业务,快速迭代.一开始不太可能会把人力投入到运维中,再加上近年来的云计算火热,运维成本降低,导致我们根本没有运维,除了业务代码,似乎所有中间件,存储,服务器,能购买云服务的全由云服务搞定.这种做法对于不对暂且不表,因为毕竟没有呆过大公司.但上线部署这种事,也是经常性出问题.好在用户量不大,还没有付费用户,也没有闹出特别大的事.所以现状基本就是开发自己开发自己的业务,自己上线.这应该就是最原始的刀耕火种吧.开句玩笑说,我们公司各个都是DevOps…</p>
+<p>当然最近也是有机会改变的.所以才有了这个系列.那又是另一个故事…</p>
+<p>虽说是刀耕火种,但好歹大家还是正常使用Git,这让我们把CI&amp;CD执行下去有一定的基础和信心.我们主要使用GitLab作为Git管理,由于当时我部署时还什么都不懂,照着网上教程一顿操作,算是搭建好了GitLab配置好了https.</p>
+<p>下面进入正题..Gitlab-Runner</p>
+<p>Gitlab-Runner是一个搭配Gitlab的CI工具.在用户push代码到Git上后会根据仓库下的.gitlab-ci.yml的配置文件来进行持续集成.</p>
+<h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><p>有了docker我们就不用费尽心思去找各种方式去解决安装问题啦.</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">docker run -d --name gitlab-runner --restart always \</span><br><span class="line">  -v /srv/gitlab-runner/config:/etc/gitlab-runner \</span><br><span class="line">  -v /var/run/docker.sock:/var/run/docker.sock \</span><br><span class="line">  gitlab/gitlab-runner:latest</span><br></pre></td></tr></table></figure>
+<p>这样一个Gitlab-Runner就在后台run起来啦.</p>
+<p>这里几个参数稍微说明下</p>
+<p>第一个挂载的是gitlab-runner的配置文件.</p>
+<p>第二个挂载的文件实际实现的是使用gitlab-ci构建时可以实现dind即docker in docker的功能,也就是说在构建时可以使用docker打包镜像</p>
+<h3 id="注册"><a href="#注册" class="headerlink" title="注册"></a>注册</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run --rm -it -v /srv/gitlab-runner/config:/etc/gitlab-runner gitlab/gitlab-runner register</span><br></pre></td></tr></table></figure>
+<p>运行gitlab-runner register命令来进行注册</p>
+<p>首先需要填写服务器地址,也就是你Gitlab运行的服务器地址</p>
+<p>然后输入token,这个token在项目Settings=&gt;CI/CD=&gt;Runners里</p>
+<p>然后是对这个Runner的描述、tags(这个tags会在后续编写gitlab-ci配置文件时使用)</p>
+<p>然后是excutor这里选择docker</p>
+<p>最后是runner的基本镜像了,因为公司技术栈都是Java上的所以使用maven:latest</p>
+<p>这样一个gitlab-runner就配置好了.</p>
+<p>每次这个runner在执行时都会去拉取镜像,考虑到国内环境可以在上文配置文件中加入</p>
+<figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">pull_policy</span>=<span class="string">"if-not-present"</span></span><br></pre></td></tr></table></figure>
+<p>关于gitlab-runner基本配置其实到这里基本结束了.如果说是使用maven构建的话还有几个配置可以参考.</p>
+<h3 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h3><h4 id="需要配置私有仓库"><a href="#需要配置私有仓库" class="headerlink" title="需要配置私有仓库"></a>需要配置私有仓库</h4><p>在gitlab-runner配置文件中找到 volumes 加入[“/your/maven/path:/root/.m2”].</p>
+<p>然后在你的gitlab-ci中指定运行时配置地址-s /root/.m2/settings.xml</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://shadowpriestfox.github.io/2018/07/31/逆变与协变/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1621,139 +1777,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://shadowpriestfox.github.io/2018/06/05/scala与Spring-ResponseBody/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Shadow Priest">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/uploads/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="夏都的博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/06/05/scala与Spring-ResponseBody/" itemprop="url">scala与Spring ResponseBody</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-06-05T13:11:26+08:00">
-                2018-06-05
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-             <span id="/2018/06/05/scala与Spring-ResponseBody/" class="leancloud_visitors" data-flag-title="scala与Spring ResponseBody">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">Visitors&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>在使用scala和Spring 实现RESTful接口过程中难免会遇到有返回Map的时候，如果是只简单的返回一个Map给Spring，是没办法将其自动转换成json数据返回到前端的。主要问题在Spring默认的<code>MappingJackson2HttpMessageConverter</code>的<code>ObjectMapper</code>不支持scala对象，所以我们只需要提供一个可以转换scala对象的<code>MappingJackson2HttpMessageConverter</code>就好了。具体代码如下：</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> com.fasterxml.jackson.databind.<span class="type">ObjectMapper</span></span><br><span class="line"><span class="keyword">import</span> com.fasterxml.jackson.module.scala.<span class="type">DefaultScalaModule</span></span><br><span class="line"><span class="keyword">import</span> com.fasterxml.jackson.module.scala.experimental.<span class="type">ScalaObjectMapper</span></span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.&#123;<span class="type">Bean</span>, <span class="type">Configuration</span>&#125;</span><br><span class="line"><span class="keyword">import</span> org.springframework.http.converter.json.<span class="type">MappingJackson2HttpMessageConverter</span></span><br><span class="line"></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ConverterConfig</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@Bean</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">converter</span></span>: <span class="type">MappingJackson2HttpMessageConverter</span> = &#123;</span><br><span class="line">    <span class="keyword">val</span> mapper = <span class="keyword">new</span> <span class="type">ObjectMapper</span> <span class="keyword">with</span> <span class="type">ScalaObjectMapper</span></span><br><span class="line">    mapper.registerModule(<span class="type">DefaultScalaModule</span>)</span><br><span class="line">    <span class="keyword">val</span> converter = <span class="keyword">new</span> <span class="type">MappingJackson2HttpMessageConverter</span>(mapper)</span><br><span class="line">    converter</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这里需要提一下的是,使用了jackson-module-scala_2.12用来将scala的相关类型Map,Tuple等，转换成json</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1808,7 +1831,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-count">14</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -1821,7 +1844,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">28</span>
+                  <span class="site-state-item-count">35</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>
