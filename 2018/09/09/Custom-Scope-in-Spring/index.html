@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Spring,Bean Scope,Spring MVC," />
+  <meta name="keywords" content="Spring,Java,Bean Scope,Spring MVC," />
 
 
 
@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="最近在面试的时候跟候选人聊到Spring Bean的Scope，遂查了一番文档，大概总结一下。 Spring 提供6种类型的scope，其中4种是在Web下使用的，当然scope也是可以自定义的。主要有下面这些scope:    Scope 定义     singleton 默认scope，顾名思义这里的Bean是单例(在每一个Spring IoC 容器中)的。这里的单例并不是线程安全的，所以如果">
-<meta name="keywords" content="Spring,Bean Scope,Spring MVC">
+<meta name="description" content="最近碰到一个需求,需要创建一个每一个请求一个bean的模型.由于这个请求并不是一个Web HttpRequest.所以没法直接使用Spring 提供的Request的Scope来解决. 创建一个自定义的Scope Class首先需要创建一个继承自org.springframework.beans.factory.config.Scope 的Scope,在这里维护了两个Map用来记录一会需要实现方法">
+<meta name="keywords" content="Spring,Java,Bean Scope,Spring MVC">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Spring Bean Scope">
-<meta property="og:url" content="https://shadowpriestfox.github.io/2018/06/14/Spring-Bean-Scope/index.html">
+<meta property="og:title" content="Custom Scope in Spring">
+<meta property="og:url" content="https://shadowpriestfox.github.io/2018/09/09/Custom-Scope-in-Spring/index.html">
 <meta property="og:site_name" content="夏都的博客">
-<meta property="og:description" content="最近在面试的时候跟候选人聊到Spring Bean的Scope，遂查了一番文档，大概总结一下。 Spring 提供6种类型的scope，其中4种是在Web下使用的，当然scope也是可以自定义的。主要有下面这些scope:    Scope 定义     singleton 默认scope，顾名思义这里的Bean是单例(在每一个Spring IoC 容器中)的。这里的单例并不是线程安全的，所以如果">
+<meta property="og:description" content="最近碰到一个需求,需要创建一个每一个请求一个bean的模型.由于这个请求并不是一个Web HttpRequest.所以没法直接使用Spring 提供的Request的Scope来解决. 创建一个自定义的Scope Class首先需要创建一个继承自org.springframework.beans.factory.config.Scope 的Scope,在这里维护了两个Map用来记录一会需要实现方法">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-06-15T15:25:43.000Z">
+<meta property="og:updated_time" content="2018-09-09T15:09:26.047Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Spring Bean Scope">
-<meta name="twitter:description" content="最近在面试的时候跟候选人聊到Spring Bean的Scope，遂查了一番文档，大概总结一下。 Spring 提供6种类型的scope，其中4种是在Web下使用的，当然scope也是可以自定义的。主要有下面这些scope:    Scope 定义     singleton 默认scope，顾名思义这里的Bean是单例(在每一个Spring IoC 容器中)的。这里的单例并不是线程安全的，所以如果">
+<meta name="twitter:title" content="Custom Scope in Spring">
+<meta name="twitter:description" content="最近碰到一个需求,需要创建一个每一个请求一个bean的模型.由于这个请求并不是一个Web HttpRequest.所以没法直接使用Spring 提供的Request的Scope来解决. 创建一个自定义的Scope Class首先需要创建一个继承自org.springframework.beans.factory.config.Scope 的Scope,在这里维护了两个Map用来记录一会需要实现方法">
 
 
 
@@ -120,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="https://shadowpriestfox.github.io/2018/06/14/Spring-Bean-Scope/"/>
+  <link rel="canonical" href="https://shadowpriestfox.github.io/2018/09/09/Custom-Scope-in-Spring/"/>
 
 
 
 
 
-  <title>Spring Bean Scope | 夏都的博客</title>
+  <title>Custom Scope in Spring | 夏都的博客</title>
   
 
 
@@ -253,7 +253,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://shadowpriestfox.github.io/2018/06/14/Spring-Bean-Scope/">
+    <link itemprop="mainEntityOfPage" href="https://shadowpriestfox.github.io/2018/09/09/Custom-Scope-in-Spring/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Shadow Priest">
@@ -270,7 +270,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Spring Bean Scope</h1>
+          <h1 class="post-title" itemprop="name headline">Custom Scope in Spring</h1>
         
 
         <div class="post-meta">
@@ -282,8 +282,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-06-14T22:38:19+08:00">
-                2018-06-14
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-09-09T22:36:54+08:00">
+                2018-09-09
               </time>
             
 
@@ -300,7 +300,7 @@
 
           
           
-             <span id="/2018/06/14/Spring-Bean-Scope/" class="leancloud_visitors" data-flag-title="Spring Bean Scope">
+             <span id="/2018/09/09/Custom-Scope-in-Spring/" class="leancloud_visitors" data-flag-title="Custom Scope in Spring">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -331,61 +331,23 @@
       
 
       
-        <p>最近在面试的时候跟候选人聊到Spring Bean的Scope，遂查了一番<a href="https://docs.spring.io/spring-framework/docs/current/spring-framework-reference/core.html#beans-factory-scopes" target="_blank" rel="noopener">文档</a>，大概总结一下。</p>
-<p>Spring 提供6种类型的scope，其中4种是在Web下使用的，当然scope也是可以自定义的。主要有下面这些scope:</p>
-<table>
-<thead>
-<tr>
-<th>Scope</th>
-<th>定义</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>singleton</td>
-<td>默认scope，顾名思义这里的Bean是单例(在每一个Spring IoC 容器中)的。这里的单例并不是线程安全的，所以如果是Lazy Init的话必须小心。</td>
-</tr>
-<tr>
-<td>prototype</td>
-<td>每次使用Bean都会创建</td>
-</tr>
-<tr>
-<td>request</td>
-<td>每一个HTTP请求会创建一个Bean</td>
-</tr>
-<tr>
-<td>session</td>
-<td>每个HTTP Session会创建一个Bean</td>
-</tr>
-<tr>
-<td>application</td>
-<td>每个Servlet Context会创建一个Bean</td>
-</tr>
-<tr>
-<td>websocket</td>
-<td>每个Websocket连接会创建一个Bean</td>
-</tr>
-</tbody>
-</table>
-<p>下面会对每一个scope有一个小的总结：</p>
-<h3 id="singleton"><a href="#singleton" class="headerlink" title="singleton"></a>singleton</h3><p>这是默认的scope，每一个Spring IoC容器只有一个。在需要被注入的时候会由Spring 容器注入。所以一般来说singleton的bean应该为无状态的。</p>
-<h3 id="prototype"><a href="#prototype" class="headerlink" title="prototype"></a>prototype</h3><p>这种bean在被使用的时候都是初始化一个全新的bean交由使用者使用。这里需要注意的是Spring IoC容器并不会管理prototype整个生命周期。Spring IoC在初始化的时候会调用相应的生命周期回调。一旦bean交由使用者之后Spring将不会管理该bean。也就是说如果你申明了prototype的bean在使用完之后需要手动释放相应的资源。或者需要自定义bean post-processor去做相应的处理。</p>
-<h4 id="singleton与prototype"><a href="#singleton与prototype" class="headerlink" title="singleton与prototype"></a>singleton与prototype</h4><p>当你把一个prototype的bean注入到一个singleton的bean中的时候。这个singleton bean将只会持有一个prototype的bean。如果你需要在这个singleton bean中使用不同的prototype bean那么做法大概如下</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Spring-API imports</span></span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.BeansException;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.ApplicationContext;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.ApplicationContextAware;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CommandManager</span> <span class="keyword">implements</span> <span class="title">ApplicationContextAware</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> ApplicationContext applicationContext;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">process</span><span class="params">(Map commandState)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// grab a new instance of the appropriate Command</span></span><br><span class="line">        Command command = createCommand();</span><br><span class="line">        <span class="comment">// set the state on the (hopefully brand new) Command instance</span></span><br><span class="line">        command.setState(commandState);</span><br><span class="line">        <span class="keyword">return</span> command.execute();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> Command <span class="title">createCommand</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// notice the Spring API dependency!</span></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.applicationContext.getBean(<span class="string">"command"</span>, Command.class);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setApplicationContext</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">            ApplicationContext applicationContext)</span> <span class="keyword">throws</span> BeansException </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.applicationContext = applicationContext;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="request-session-application和websocket"><a href="#request-session-application和websocket" class="headerlink" title="request,session,application和websocket"></a>request,session,application和websocket</h4><p>这四个scope就放在一起讲吧。</p>
-<ol>
-<li><p>这4个scope必须使用在web的Context中</p>
-</li>
-<li><p>还需要一些额外的初始化工作，如果是在Spring MVC的DispatcherServlet中的话可以不用做这些工作，因为Spring DispatcherServlet已经帮你做了这些工作了。但是如果不在DispatcherServlet中的话注册<code>org.springframework.web.context.request.RequestContextListener</code> 比如</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">web-app</span>&gt;</span></span><br><span class="line">    ...</span><br><span class="line">    <span class="tag">&lt;<span class="name">listener</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">listener-class</span>&gt;</span></span><br><span class="line">            org.springframework.web.context.request.RequestContextListener</span><br><span class="line">        <span class="tag">&lt;/<span class="name">listener-class</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">listener</span>&gt;</span></span><br><span class="line">    ...</span><br><span class="line"><span class="tag">&lt;/<span class="name">web-app</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>或者可以使用Filter</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">web-app</span>&gt;</span></span><br><span class="line">    ...</span><br><span class="line">    <span class="tag">&lt;<span class="name">filter</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">filter-name</span>&gt;</span>requestContextFilter<span class="tag">&lt;/<span class="name">filter-name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">filter-class</span>&gt;</span>org.springframework.web.filter.RequestContextFilter<span class="tag">&lt;/<span class="name">filter-class</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">filter</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">filter-mapping</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">filter-name</span>&gt;</span>requestContextFilter<span class="tag">&lt;/<span class="name">filter-name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">url-pattern</span>&gt;</span>/*<span class="tag">&lt;/<span class="name">url-pattern</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">filter-mapping</span>&gt;</span></span><br><span class="line">    ...</span><br><span class="line"><span class="tag">&lt;/<span class="name">web-app</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p><code>DispatcherServlet</code>,<code>RequestContextListener</code>和<code>RequestContextFilter</code>做了同一件事，将HTTP request对象绑定到响应对应request的线程中。</p>
-<p>application这个scope是在ServletContext这一级别而不是ApplicationContext这一级别，这两个的区别请看<a href="/2018/06/13/Spring-MVC的context/" title="Spring MVC的context">Spring MVC的context</a>的内容.</p>
-<p>如果说想使用这4个scope的bean作为依赖被注入。那么需要设置该bean的AOP代理，默认来说是使用CGLib的。如果说要使用JDK标准的动态代理需要实现一个接口并将proxyMode设置为ScopedProxyMode.INTERFACES</p>
-<p>以上基本上就是几种scope的说明。</p>
-</li>
-</ol>
+        <p>最近碰到一个需求,需要创建一个每一个请求一个bean的模型.由于这个请求并不是一个Web HttpRequest.所以没法直接使用Spring 提供的Request的Scope来解决.</p>
+<h3 id="创建一个自定义的Scope-Class"><a href="#创建一个自定义的Scope-Class" class="headerlink" title="创建一个自定义的Scope Class"></a>创建一个自定义的Scope Class</h3><p>首先需要创建一个继承自org.springframework.beans.factory.config.Scope 的Scope,在这里维护了两个Map用来记录一会需要实现方法的信息.考虑到每一个Request都会在不同的线程里执行,所以这里使用线程ID来作为辅助标定bean的一个key</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ThreadScope</span> <span class="keyword">extends</span> <span class="title">Scope</span> <span class="keyword">with</span> <span class="title">LazyLogging</span> </span>&#123;</span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">val</span> contextMap = mutable.<span class="type">Map</span>[<span class="type">String</span>, <span class="type">AnyRef</span>]()</span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">val</span> runMap = mutable.<span class="type">Map</span>[<span class="type">String</span>, <span class="type">Runnable</span>]()</span><br><span class="line">  <span class="keyword">private</span> <span class="function"><span class="keyword">def</span> <span class="title">threadId</span> </span>= <span class="type">Thread</span>.currentThread().getId.toString</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>来实现接口所需的各种方法:</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">override</span> <span class="function"><span class="keyword">def</span> <span class="title">get</span></span>(s: <span class="type">String</span>, objectFactory: <span class="type">ObjectFactory</span>[_]): <span class="type">AnyRef</span> = &#123;</span><br><span class="line">  <span class="keyword">val</span> key = s + threadId</span><br><span class="line">  <span class="keyword">if</span> (contextMap.contains(key)) &#123;</span><br><span class="line">    contextMap(key)</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="keyword">val</span> ins = objectFactory.getObject.asInstanceOf[<span class="type">AnyRef</span>]</span><br><span class="line">    contextMap.put(key, ins)</span><br><span class="line">    ins</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">override</span> <span class="function"><span class="keyword">def</span> <span class="title">remove</span></span>(s: <span class="type">String</span>): <span class="type">AnyRef</span> = &#123;</span><br><span class="line">  <span class="keyword">val</span> key = s + threadId</span><br><span class="line">  runMap.remove(key)</span><br><span class="line">  contextMap.remove(key)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">override</span> <span class="function"><span class="keyword">def</span> <span class="title">registerDestructionCallback</span></span>(s: <span class="type">String</span>, runnable: <span class="type">Runnable</span>): <span class="type">Unit</span> = &#123;</span><br><span class="line">  <span class="keyword">val</span> key = s + threadId</span><br><span class="line">  runMap.put(key, runnable)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">override</span> <span class="function"><span class="keyword">def</span> <span class="title">resolveContextualObject</span></span>(s: <span class="type">String</span>): <span class="type">AnyRef</span> = <span class="literal">null</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">override</span> <span class="function"><span class="keyword">def</span> <span class="title">getConversationId</span></span>: <span class="type">String</span> = <span class="string">"SampleId"</span></span><br></pre></td></tr></table></figure>
+<p>注意,bean的销毁应该由调用者决定.</p>
+<h3 id="注册自定义Scope"><a href="#注册自定义Scope" class="headerlink" title="注册自定义Scope"></a>注册自定义Scope</h3><p>这里使用<strong>ConfigurableBeanFactory</strong>的registerScope来注册Scope</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">GateBeanFactoryPostProcessor</span> <span class="keyword">extends</span> <span class="title">BeanFactoryPostProcessor</span> </span>&#123;</span><br><span class="line">  <span class="keyword">override</span> <span class="function"><span class="keyword">def</span> <span class="title">postProcessBeanFactory</span></span>(configurableListableBeanFactory: <span class="type">ConfigurableListableBeanFactory</span>): <span class="type">Unit</span> = &#123;</span><br><span class="line">    configurableListableBeanFactory.registerScope(<span class="string">"MyRequest"</span>, <span class="keyword">new</span> <span class="type">ThreadScope</span>)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BeanFactoryPostProcessorConfig</span></span></span><br><span class="line"><span class="class"></span></span><br><span class="line"><span class="class"><span class="title">object</span> <span class="title">BeanFactoryPostProcessorConfig</span> </span>&#123;</span><br><span class="line">  <span class="meta">@Bean</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">beanFactoryPostProcessor</span> </span>= <span class="keyword">new</span> <span class="type">GateBeanFactoryPostProcessor</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里稍微提醒下 beanFactoryPostProcessor得是个静态bean.</p>
+<h3 id="使用自定义Scope"><a href="#使用自定义Scope" class="headerlink" title="使用自定义Scope"></a>使用自定义Scope</h3><p>由于我需要在Singleton bean中使用所以得加上proxy</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="meta">@Scope</span>(value = <span class="string">"MyRequest"</span>, proxyMode = <span class="type">ScopedProxyMode</span>.<span class="type">TARGET_CLASS</span>)</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TestScope</span> </span>&#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>另外如果需要根据名字来获取这个bean需要加上scopedTarget</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> t =  beanFactory.getBean(<span class="string">"scopedTarget.testScope"</span>)</span><br></pre></td></tr></table></figure>
+<p>最后,在使用完后需要销毁这个bean</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">beanFactory.destroyScopedBean(<span class="string">"scopedTarget.testScope"</span>)</span><br></pre></td></tr></table></figure>
+<p>以上基本就是一个自定义scope bean的流程</p>
 
       
     </div>
@@ -405,6 +367,8 @@
           
             <a href="/tags/Spring/" rel="tag"># Spring</a>
           
+            <a href="/tags/Java/" rel="tag"># Java</a>
+          
             <a href="/tags/Bean-Scope/" rel="tag"># Bean Scope</a>
           
             <a href="/tags/Spring-MVC/" rel="tag"># Spring MVC</a>
@@ -420,8 +384,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/06/13/Spring-MVC的context/" rel="next" title="Spring MVC的context">
-                <i class="fa fa-chevron-left"></i> Spring MVC的context
+              <a href="/2018/08/21/一个创业公司CI-CD的演化-一-——GitLab-Runner/" rel="next" title="一个创业公司CI&CD的演化(一)——GitLab Runner">
+                <i class="fa fa-chevron-left"></i> 一个创业公司CI&CD的演化(一)——GitLab Runner
               </a>
             
           </div>
@@ -429,10 +393,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/06/18/Scala-Test/" rel="prev" title="Scala Test">
-                Scala Test <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -578,7 +538,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#singleton"><span class="nav-number">1.</span> <span class="nav-text">singleton</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#prototype"><span class="nav-number">2.</span> <span class="nav-text">prototype</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#singleton与prototype"><span class="nav-number">2.1.</span> <span class="nav-text">singleton与prototype</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#request-session-application和websocket"><span class="nav-number">2.2.</span> <span class="nav-text">request,session,application和websocket</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#创建一个自定义的Scope-Class"><span class="nav-number">1.</span> <span class="nav-text">创建一个自定义的Scope Class</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#注册自定义Scope"><span class="nav-number">2.</span> <span class="nav-text">注册自定义Scope</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用自定义Scope"><span class="nav-number">3.</span> <span class="nav-text">使用自定义Scope</span></a></li></ol></div>
             
 
           </div>
