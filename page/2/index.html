@@ -252,6 +252,150 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://shadowpriestfox.github.io/2018/06/18/Scala-Test/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Shadow Priest">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="夏都的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/06/18/Scala-Test/" itemprop="url">Scala Test</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-06-18T21:34:12+08:00">
+                2018-06-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2018/06/18/Scala-Test/" class="leancloud_visitors" data-flag-title="Scala Test">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">Visitors&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>平时开发免不了要做一些单元测试，单元测试用的比较多的自然是JUnit。不过既然平时使用scala比较多还是尝试使用一下scalatest来作为测试工具。</p>
+<h4 id="官网"><a href="#官网" class="headerlink" title="官网"></a><a href="http://www.scalatest.org" target="_blank" rel="noopener">官网</a></h4><h4 id="主要依赖"><a href="#主要依赖" class="headerlink" title="主要依赖"></a>主要依赖</h4><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.scalatest<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>scalatest_2.12<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">scope</span>&gt;</span>test<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.scalactic<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>scalactic_2.12<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">scope</span>&gt;</span>test<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.scalacheck<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>scalacheck_2.12<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">scope</span>&gt;</span>test<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h4 id="测试风格"><a href="#测试风格" class="headerlink" title="测试风格"></a>测试风格</h4><p>scalatest提供的测试风格真的很多啊，一般来说熟悉了xUnit风格的同学可能比较倾向于FunSuite写法。当然如果说要过渡到<a href="https://en.wikipedia.org/wiki/Behavior-driven_development" target="_blank" rel="noopener">BDD</a>可以考虑尝试一下FlatSpec</p>
+<p>这里将以FlatSpec风格举一个简单的例子</p>
+<ol>
+<li>需要定义一个类来extends 你所选用的风格比如</li>
+</ol>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MySpec</span> <span class="keyword">extends</span> <span class="title">FlatSpec</span></span>&#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>FlatSpec由一句对行为的描述以及测试这个行为的代码块组成，这句对行为的描述通常由一个主体，一个动词如：should,must,can然后加上这句话剩下的部分比如</li>
+</ol>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SampleTest</span> <span class="keyword">extends</span> <span class="title">FlatSpec</span> </span>&#123;</span><br><span class="line">  <span class="string">"Empty Stack"</span> can <span class="string">"not pop"</span> in &#123;</span><br><span class="line">    assertThrows[<span class="type">NoSuchElementException</span>](<span class="type">Stack</span>.empty.pop)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="Maven-插件"><a href="#Maven-插件" class="headerlink" title="Maven 插件"></a>Maven 插件</h4><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- disable surefire -- &gt;</span></span><br><span class="line"><span class="comment">&lt;plugin&gt;</span></span><br><span class="line"><span class="comment">  &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;</span></span><br><span class="line"><span class="comment">  &lt;artifactId&gt;maven-surefire-plugin&lt;/artifactId&gt;</span></span><br><span class="line"><span class="comment">  &lt;version&gt;2.7&lt;/version&gt;</span></span><br><span class="line"><span class="comment">  &lt;configuration&gt;</span></span><br><span class="line"><span class="comment">    &lt;skipTests&gt;true&lt;/skipTests&gt;</span></span><br><span class="line"><span class="comment">  &lt;/configuration&gt;</span></span><br><span class="line"><span class="comment">&lt;/plugin&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- enable scalatest -- &gt;</span></span><br><span class="line"><span class="comment">&lt;plugin&gt;</span></span><br><span class="line"><span class="comment">  &lt;groupId&gt;org.scalatest&lt;/groupId&gt;</span></span><br><span class="line"><span class="comment">  &lt;artifactId&gt;scalatest-maven-plugin&lt;/artifactId&gt;</span></span><br><span class="line"><span class="comment">  &lt;version&gt;1.0&lt;/version&gt;</span></span><br><span class="line"><span class="comment">  &lt;configuration&gt;</span></span><br><span class="line"><span class="comment">    &lt;reportsDirectory&gt;$&#123;project.build.directory&#125;/surefire-reports&lt;/reportsDirectory&gt;</span></span><br><span class="line"><span class="comment">    &lt;junitxml&gt;.&lt;/junitxml&gt;</span></span><br><span class="line"><span class="comment">    &lt;filereports&gt;WDF TestSuite.txt&lt;/filereports&gt;</span></span><br><span class="line"><span class="comment">  &lt;/configuration&gt;</span></span><br><span class="line"><span class="comment">  &lt;executions&gt;</span></span><br><span class="line"><span class="comment">    &lt;execution&gt;</span></span><br><span class="line"><span class="comment">      &lt;id&gt;test&lt;/id&gt;</span></span><br><span class="line"><span class="comment">      &lt;goals&gt;</span></span><br><span class="line"><span class="comment">        &lt;goal&gt;test&lt;/goal&gt;</span></span><br><span class="line"><span class="comment">      &lt;/goals&gt;</span></span><br><span class="line"><span class="comment">    &lt;/execution&gt;</span></span><br><span class="line"><span class="comment">  &lt;/executions&gt;</span></span><br><span class="line"><span class="comment">&lt;/plugin&gt;</span></span><br></pre></td></tr></table></figure>
+<p>有了这些，基本上可以开始使用scalatest来对项目进行一个简单的单元测试了</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://shadowpriestfox.github.io/2018/06/14/Spring-Bean-Scope/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -315,24 +459,6 @@
 
           
 
-          
-            <div class="post-wordcount">
-              
-
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Reading time &asymp;</span>
-                
-                <span title="Reading time">
-                  
-                </span>
-              
-            </div>
           
 
           
@@ -519,24 +645,6 @@
           
 
           
-            <div class="post-wordcount">
-              
-
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Reading time &asymp;</span>
-                
-                <span title="Reading time">
-                  
-                </span>
-              
-            </div>
-          
 
           
 
@@ -682,24 +790,6 @@
           
 
           
-            <div class="post-wordcount">
-              
-
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Reading time &asymp;</span>
-                
-                <span title="Reading time">
-                  
-                </span>
-              
-            </div>
-          
 
           
 
@@ -832,24 +922,6 @@
 
           
 
-          
-            <div class="post-wordcount">
-              
-
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Reading time &asymp;</span>
-                
-                <span title="Reading time">
-                  
-                </span>
-              
-            </div>
           
 
           
@@ -1008,24 +1080,6 @@
           
 
           
-            <div class="post-wordcount">
-              
-
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Reading time &asymp;</span>
-                
-                <span title="Reading time">
-                  
-                </span>
-              
-            </div>
-          
 
           
 
@@ -1183,24 +1237,6 @@
           
 
           
-            <div class="post-wordcount">
-              
-
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Reading time &asymp;</span>
-                
-                <span title="Reading time">
-                  
-                </span>
-              
-            </div>
-          
 
           
 
@@ -1317,7 +1353,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">16</span>
+                  <span class="site-state-item-count">17</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -1330,7 +1366,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">37</span>
+                  <span class="site-state-item-count">43</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>

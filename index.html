@@ -252,6 +252,164 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://shadowpriestfox.github.io/2018/10/15/Facebook-Instant-Games-实践/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Shadow Priest">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="夏都的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/10/15/Facebook-Instant-Games-实践/" itemprop="url">Facebook Instant Games 实践</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-10-15T23:32:31+08:00">
+                2018-10-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2018/10/15/Facebook-Instant-Games-实践/" class="leancloud_visitors" data-flag-title="Facebook Instant Games 实践">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">Visitors&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>Facebook Instant Games是一个类似微信小游戏的平台,但和微信小游戏还是有不少差别,虽然标题说是实践,其实是趟了一些坑,以及一些经验的记录吧.</p>
+<p>游戏开发主要用了CocosCreator和Egret两个2D引擎.所以这篇文章基本上就是说三个部分:</p>
+<ul>
+<li>Facebook Instant Games平台本身的坑</li>
+<li>CocosCreator发布到Facebook Instant Games平台的坑</li>
+<li>Egret发布到Facebook Instant Games 平台的坑</li>
+</ul>
+<h2 id="Facebook-Instant-Games"><a href="#Facebook-Instant-Games" class="headerlink" title="Facebook Instant Games"></a>Facebook Instant Games</h2><p>前面说过了,这是一个类似微信小游戏的平台,但有很多差别.先大概过一下不一样的地方:</p>
+<h3 id="优势"><a href="#优势" class="headerlink" title="优势"></a>优势</h3><p>Facebook Instant Games不需要版号,也不需要软著,只要有Facebook账号即可申请开发者,进行开发.提交审核,通过审核后上线.</p>
+<h3 id="劣势"><a href="#劣势" class="headerlink" title="劣势"></a>劣势</h3><h4 id="不存在的网站"><a href="#不存在的网站" class="headerlink" title="不存在的网站"></a>不存在的网站</h4><p>没什么好说的</p>
+<h4 id="调试"><a href="#调试" class="headerlink" title="调试"></a>调试</h4><p>调试分两部分</p>
+<ul>
+<li>平台相关的代码</li>
+<li>平台无关的代码</li>
+</ul>
+<p>平台无关的代码很好调试,因为那就是个html5 游戏,所以强烈建议在游戏完成前,不考虑接入facebook sdk.也就是那个FBInstants.</p>
+<p>平台相关代码非常不友好,本地调试需要开https服务器,<a href="https://developers.facebook.com/docs/games/instant-games/test-publish-share#localhost" target="_blank" rel="noopener">相关的教程</a>,建议除广告以外所有的api在这里调试.</p>
+<p>上传到服务器调试很慢,每次还有检查你的代码,基本调试一次需要1-2分钟,周期太长,这里一般用来做最终调试,以及广告相关代码的调试.</p>
+<h3 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h3><h4 id="广告"><a href="#广告" class="headerlink" title="广告"></a>广告</h4><p>首先广告不用像微信一样需要1000用户.但广告有一个比较不好描述的门槛.那就是,你需要一张大陆以外的银行卡,以及相关资料(均必须在大陆以外)</p>
+<p>广告的管理后台和Instant Games的管理后台不在一个地方,广告的管理后台在一个叫做Audience Network 创收管理工具的地方</p>
+<p>广告分两种,一种是奖励视频广告,这种广告一般需要15-45s,期间用户很难打断(打断的入口藏的比较深),据观察ecpm相对较高.另一种是插屏广告,一般5s左右可关.</p>
+<p>从名字可以看出,视频广告是给用户使用道具啊奖励之类设置的.插屏应该是在游戏进行到一定阶段加入的.</p>
+<p>这里多说几句广告调试相关的,默认状态下,只有建立app的开发者才能调出广告,而且必须在手机上,在浏览器上是调不出广告的.另外广告相关的代码一定要处理NO_FILL的状况,另外在发布游戏前,广告也是需要发布的.</p>
+<h4 id="内购"><a href="#内购" class="headerlink" title="内购"></a>内购</h4><p>内购和微信也不一样,微信小游戏内购需要公司名义开发,也就是需要版号,在现在这个拿不到版号的年代.还有什么好说的呢.</p>
+<p>Facebook Instant Games 内购需要提供苹果开发者账号的ID,这个在相关页面里会有提示教你怎么找.</p>
+<h3 id="平台"><a href="#平台" class="headerlink" title="平台"></a>平台</h3><p>Facebook Instant Games这个平台比微信小程序贴心一点的地方在于新上的游戏可以发布到game_hub里,第一周会有一定的量进来,一个不算太好的游戏DAU大概在1000左右.这对于没有推广渠道的开发者非常好的入口了.另外一点需要注意的是,同一个账号下这样的新手礼包是有1周cd时间的.也就是你上了一个游戏在game_hub里,在一周时间内不能上第二个.</p>
+<h1 id="CocosCreator"><a href="#CocosCreator" class="headerlink" title="CocosCreator"></a>CocosCreator</h1><p>这里只说一下.在打包发布到Facebook Instant Games的时候,目前不确定什么原因会导致代码压缩有缓存,而Facebook本身在线测试就很麻烦,而且没办法查log,所以最好自己有一个专门的方式来记录log,并且每次都确认下自己测试的是最新的版本</p>
+<h1 id="Egret"><a href="#Egret" class="headerlink" title="Egret"></a>Egret</h1><p>白鹭对Facebook Instant Games支持相对CocosCreator要好一些,发布前记得将Facebook的SDK通过script方式放进templates/index.html中,不然会发布失败,另外白鹭提供的fbinstants.d.ts有借口类型不对,比如getConnectedPlayerEntriesAsync这里的返回值应该是Promise&lt;LeaderboardEntry[]&gt;.</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://shadowpriestfox.github.io/2018/09/20/h2数据库的简单使用/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -315,24 +473,6 @@
 
           
 
-          
-            <div class="post-wordcount">
-              
-
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Reading time &asymp;</span>
-                
-                <span title="Reading time">
-                  
-                </span>
-              
-            </div>
           
 
           
@@ -474,24 +614,6 @@
 
           
 
-          
-            <div class="post-wordcount">
-              
-
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Reading time &asymp;</span>
-                
-                <span title="Reading time">
-                  
-                </span>
-              
-            </div>
           
 
           
@@ -639,24 +761,6 @@
 
           
 
-          
-            <div class="post-wordcount">
-              
-
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Reading time &asymp;</span>
-                
-                <span title="Reading time">
-                  
-                </span>
-              
-            </div>
           
 
           
@@ -814,24 +918,6 @@
           
 
           
-            <div class="post-wordcount">
-              
-
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Reading time &asymp;</span>
-                
-                <span title="Reading time">
-                  
-                </span>
-              
-            </div>
-          
 
           
 
@@ -988,24 +1074,6 @@
           
 
           
-            <div class="post-wordcount">
-              
-
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Reading time &asymp;</span>
-                
-                <span title="Reading time">
-                  
-                </span>
-              
-            </div>
-          
 
           
 
@@ -1161,24 +1229,6 @@
           
 
           
-            <div class="post-wordcount">
-              
-
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Reading time &asymp;</span>
-                
-                <span title="Reading time">
-                  
-                </span>
-              
-            </div>
-          
 
           
 
@@ -1327,24 +1377,6 @@
 
           
 
-          
-            <div class="post-wordcount">
-              
-
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Reading time &asymp;</span>
-                
-                <span title="Reading time">
-                  
-                </span>
-              
-            </div>
           
 
           
@@ -1495,24 +1527,6 @@
 
           
 
-          
-            <div class="post-wordcount">
-              
-
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Reading time &asymp;</span>
-                
-                <span title="Reading time">
-                  
-                </span>
-              
-            </div>
           
 
           
@@ -1669,24 +1683,6 @@
           
 
           
-            <div class="post-wordcount">
-              
-
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Reading time &asymp;</span>
-                
-                <span title="Reading time">
-                  
-                </span>
-              
-            </div>
-          
 
           
 
@@ -1718,168 +1714,6 @@
 <h2 id="Nginx"><a href="#Nginx" class="headerlink" title="Nginx"></a>Nginx</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    listen 443 ssl;</span><br><span class="line">    server_name 你的域名;</span><br><span class="line">    ssl_certificate Let&apos;s Encrypt给你证书的fullchain.pem路径;</span><br><span class="line">    ssl_certificate_key Let&apos;s Encrypt给你证书的privkey.pem路径;</span><br><span class="line">    ssl_protocols TLSv1 TLSv1.1 TLSv1.2;</span><br><span class="line">    proxy_set_header Host $host;</span><br><span class="line">    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</span><br><span class="line">    proxy_set_header X-Real-IP $remote_addr;</span><br><span class="line">    proxy_set_header X-Forwarded-Proto $scheme;</span><br><span class="line">    </span><br><span class="line">    location / &#123;</span><br><span class="line">        proxy_pass 对应机器路径;</span><br><span class="line">        proxy_http_version 1.1;</span><br><span class="line">        proxy_set_header Upgrade $http_upgrade;</span><br><span class="line">        proxy_set_header Connection &quot;upgrade&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">server &#123;</span><br><span class="line">    listen 80;</span><br><span class="line">    server_name 域名;</span><br><span class="line">    return 301 https://$host$request_url;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>启动</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run --name nginx -p 80:80 -p 443:443 -v /PathToConf:/etc/nginx -v /etc/letsencrypt:/etc/letsencrypt nginx</span><br></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://shadowpriestfox.github.io/2018/06/18/Scala-Test/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Shadow Priest">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/uploads/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="夏都的博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/06/18/Scala-Test/" itemprop="url">Scala Test</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-06-18T21:34:12+08:00">
-                2018-06-18
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-             <span id="/2018/06/18/Scala-Test/" class="leancloud_visitors" data-flag-title="Scala Test">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">Visitors&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Reading time &asymp;</span>
-                
-                <span title="Reading time">
-                  
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>平时开发免不了要做一些单元测试，单元测试用的比较多的自然是JUnit。不过既然平时使用scala比较多还是尝试使用一下scalatest来作为测试工具。</p>
-<h4 id="官网"><a href="#官网" class="headerlink" title="官网"></a><a href="http://www.scalatest.org" target="_blank" rel="noopener">官网</a></h4><h4 id="主要依赖"><a href="#主要依赖" class="headerlink" title="主要依赖"></a>主要依赖</h4><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.scalatest<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>scalatest_2.12<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">scope</span>&gt;</span>test<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.scalactic<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>scalactic_2.12<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">scope</span>&gt;</span>test<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.scalacheck<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>scalacheck_2.12<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">scope</span>&gt;</span>test<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<h4 id="测试风格"><a href="#测试风格" class="headerlink" title="测试风格"></a>测试风格</h4><p>scalatest提供的测试风格真的很多啊，一般来说熟悉了xUnit风格的同学可能比较倾向于FunSuite写法。当然如果说要过渡到<a href="https://en.wikipedia.org/wiki/Behavior-driven_development" target="_blank" rel="noopener">BDD</a>可以考虑尝试一下FlatSpec</p>
-<p>这里将以FlatSpec风格举一个简单的例子</p>
-<ol>
-<li>需要定义一个类来extends 你所选用的风格比如</li>
-</ol>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MySpec</span> <span class="keyword">extends</span> <span class="title">FlatSpec</span></span>&#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ol start="2">
-<li>FlatSpec由一句对行为的描述以及测试这个行为的代码块组成，这句对行为的描述通常由一个主体，一个动词如：should,must,can然后加上这句话剩下的部分比如</li>
-</ol>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SampleTest</span> <span class="keyword">extends</span> <span class="title">FlatSpec</span> </span>&#123;</span><br><span class="line">  <span class="string">"Empty Stack"</span> can <span class="string">"not pop"</span> in &#123;</span><br><span class="line">    assertThrows[<span class="type">NoSuchElementException</span>](<span class="type">Stack</span>.empty.pop)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="Maven-插件"><a href="#Maven-插件" class="headerlink" title="Maven 插件"></a>Maven 插件</h4><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- disable surefire -- &gt;</span></span><br><span class="line"><span class="comment">&lt;plugin&gt;</span></span><br><span class="line"><span class="comment">  &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;</span></span><br><span class="line"><span class="comment">  &lt;artifactId&gt;maven-surefire-plugin&lt;/artifactId&gt;</span></span><br><span class="line"><span class="comment">  &lt;version&gt;2.7&lt;/version&gt;</span></span><br><span class="line"><span class="comment">  &lt;configuration&gt;</span></span><br><span class="line"><span class="comment">    &lt;skipTests&gt;true&lt;/skipTests&gt;</span></span><br><span class="line"><span class="comment">  &lt;/configuration&gt;</span></span><br><span class="line"><span class="comment">&lt;/plugin&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- enable scalatest -- &gt;</span></span><br><span class="line"><span class="comment">&lt;plugin&gt;</span></span><br><span class="line"><span class="comment">  &lt;groupId&gt;org.scalatest&lt;/groupId&gt;</span></span><br><span class="line"><span class="comment">  &lt;artifactId&gt;scalatest-maven-plugin&lt;/artifactId&gt;</span></span><br><span class="line"><span class="comment">  &lt;version&gt;1.0&lt;/version&gt;</span></span><br><span class="line"><span class="comment">  &lt;configuration&gt;</span></span><br><span class="line"><span class="comment">    &lt;reportsDirectory&gt;$&#123;project.build.directory&#125;/surefire-reports&lt;/reportsDirectory&gt;</span></span><br><span class="line"><span class="comment">    &lt;junitxml&gt;.&lt;/junitxml&gt;</span></span><br><span class="line"><span class="comment">    &lt;filereports&gt;WDF TestSuite.txt&lt;/filereports&gt;</span></span><br><span class="line"><span class="comment">  &lt;/configuration&gt;</span></span><br><span class="line"><span class="comment">  &lt;executions&gt;</span></span><br><span class="line"><span class="comment">    &lt;execution&gt;</span></span><br><span class="line"><span class="comment">      &lt;id&gt;test&lt;/id&gt;</span></span><br><span class="line"><span class="comment">      &lt;goals&gt;</span></span><br><span class="line"><span class="comment">        &lt;goal&gt;test&lt;/goal&gt;</span></span><br><span class="line"><span class="comment">      &lt;/goals&gt;</span></span><br><span class="line"><span class="comment">    &lt;/execution&gt;</span></span><br><span class="line"><span class="comment">  &lt;/executions&gt;</span></span><br><span class="line"><span class="comment">&lt;/plugin&gt;</span></span><br></pre></td></tr></table></figure>
-<p>有了这些，基本上可以开始使用scalatest来对项目进行一个简单的单元测试了</p>
 
           
         
@@ -1969,7 +1803,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">16</span>
+                  <span class="site-state-item-count">17</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -1982,7 +1816,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">37</span>
+                  <span class="site-state-item-count">43</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>

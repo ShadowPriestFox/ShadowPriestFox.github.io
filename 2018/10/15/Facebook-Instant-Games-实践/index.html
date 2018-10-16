@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Facebook,Instant Games,CocosCreator,Egret,小游戏,html5 game," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Facebook Instant Games是一个类似微信小游戏的平台,但和微信小游戏还是有不少差别,虽然标题说是实践,其实是趟了一些坑,以及一些经验的记录吧. 游戏开发主要用了CocosCreator和Egret两个2D引擎.所以这篇文章基本上就是说三个部分:  Facebook Instant Games平台本身的坑 CocosCreator发布到Facebook Instant Games平">
+<meta name="keywords" content="Facebook,Instant Games,CocosCreator,Egret,小游戏,html5 game">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Facebook Instant Games 实践">
+<meta property="og:url" content="https://shadowpriestfox.github.io/2018/10/15/Facebook-Instant-Games-实践/index.html">
+<meta property="og:site_name" content="夏都的博客">
+<meta property="og:description" content="Facebook Instant Games是一个类似微信小游戏的平台,但和微信小游戏还是有不少差别,虽然标题说是实践,其实是趟了一些坑,以及一些经验的记录吧. 游戏开发主要用了CocosCreator和Egret两个2D引擎.所以这篇文章基本上就是说三个部分:  Facebook Instant Games平台本身的坑 CocosCreator发布到Facebook Instant Games平">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-10-16T15:40:31.636Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Facebook Instant Games 实践">
+<meta name="twitter:description" content="Facebook Instant Games是一个类似微信小游戏的平台,但和微信小游戏还是有不少差别,虽然标题说是实践,其实是趟了一些坑,以及一些经验的记录吧. 游戏开发主要用了CocosCreator和Egret两个2D引擎.所以这篇文章基本上就是说三个部分:  Facebook Instant Games平台本身的坑 CocosCreator发布到Facebook Instant Games平">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://shadowpriestfox.github.io/2018/10/15/Facebook-Instant-Games-实践/"/>
+
+
+
+
+
+  <title>Facebook Instant Games 实践 | 夏都的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?799df6e097413af16329a45da7be10e4";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">夏都的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">夏都的魔法研究室</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://shadowpriestfox.github.io/2018/10/15/Facebook-Instant-Games-实践/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Shadow Priest">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="夏都的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Facebook Instant Games 实践</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-10-15T23:32:31+08:00">
+                2018-10-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2018/10/15/Facebook-Instant-Games-实践/" class="leancloud_visitors" data-flag-title="Facebook Instant Games 实践">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">Visitors&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Facebook Instant Games是一个类似微信小游戏的平台,但和微信小游戏还是有不少差别,虽然标题说是实践,其实是趟了一些坑,以及一些经验的记录吧.</p>
+<p>游戏开发主要用了CocosCreator和Egret两个2D引擎.所以这篇文章基本上就是说三个部分:</p>
+<ul>
+<li>Facebook Instant Games平台本身的坑</li>
+<li>CocosCreator发布到Facebook Instant Games平台的坑</li>
+<li>Egret发布到Facebook Instant Games 平台的坑</li>
+</ul>
+<h2 id="Facebook-Instant-Games"><a href="#Facebook-Instant-Games" class="headerlink" title="Facebook Instant Games"></a>Facebook Instant Games</h2><p>前面说过了,这是一个类似微信小游戏的平台,但有很多差别.先大概过一下不一样的地方:</p>
+<h3 id="优势"><a href="#优势" class="headerlink" title="优势"></a>优势</h3><p>Facebook Instant Games不需要版号,也不需要软著,只要有Facebook账号即可申请开发者,进行开发.提交审核,通过审核后上线.</p>
+<h3 id="劣势"><a href="#劣势" class="headerlink" title="劣势"></a>劣势</h3><h4 id="不存在的网站"><a href="#不存在的网站" class="headerlink" title="不存在的网站"></a>不存在的网站</h4><p>没什么好说的</p>
+<h4 id="调试"><a href="#调试" class="headerlink" title="调试"></a>调试</h4><p>调试分两部分</p>
+<ul>
+<li>平台相关的代码</li>
+<li>平台无关的代码</li>
+</ul>
+<p>平台无关的代码很好调试,因为那就是个html5 游戏,所以强烈建议在游戏完成前,不考虑接入facebook sdk.也就是那个FBInstants.</p>
+<p>平台相关代码非常不友好,本地调试需要开https服务器,<a href="https://developers.facebook.com/docs/games/instant-games/test-publish-share#localhost" target="_blank" rel="noopener">相关的教程</a>,建议除广告以外所有的api在这里调试.</p>
+<p>上传到服务器调试很慢,每次还有检查你的代码,基本调试一次需要1-2分钟,周期太长,这里一般用来做最终调试,以及广告相关代码的调试.</p>
+<h3 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h3><h4 id="广告"><a href="#广告" class="headerlink" title="广告"></a>广告</h4><p>首先广告不用像微信一样需要1000用户.但广告有一个比较不好描述的门槛.那就是,你需要一张大陆以外的银行卡,以及相关资料(均必须在大陆以外)</p>
+<p>广告的管理后台和Instant Games的管理后台不在一个地方,广告的管理后台在一个叫做Audience Network 创收管理工具的地方</p>
+<p>广告分两种,一种是奖励视频广告,这种广告一般需要15-45s,期间用户很难打断(打断的入口藏的比较深),据观察ecpm相对较高.另一种是插屏广告,一般5s左右可关.</p>
+<p>从名字可以看出,视频广告是给用户使用道具啊奖励之类设置的.插屏应该是在游戏进行到一定阶段加入的.</p>
+<p>这里多说几句广告调试相关的,默认状态下,只有建立app的开发者才能调出广告,而且必须在手机上,在浏览器上是调不出广告的.另外广告相关的代码一定要处理NO_FILL的状况,另外在发布游戏前,广告也是需要发布的.</p>
+<h4 id="内购"><a href="#内购" class="headerlink" title="内购"></a>内购</h4><p>内购和微信也不一样,微信小游戏内购需要公司名义开发,也就是需要版号,在现在这个拿不到版号的年代.还有什么好说的呢.</p>
+<p>Facebook Instant Games 内购需要提供苹果开发者账号的ID,这个在相关页面里会有提示教你怎么找.</p>
+<h3 id="平台"><a href="#平台" class="headerlink" title="平台"></a>平台</h3><p>Facebook Instant Games这个平台比微信小程序贴心一点的地方在于新上的游戏可以发布到game_hub里,第一周会有一定的量进来,一个不算太好的游戏DAU大概在1000左右.这对于没有推广渠道的开发者非常好的入口了.另外一点需要注意的是,同一个账号下这样的新手礼包是有1周cd时间的.也就是你上了一个游戏在game_hub里,在一周时间内不能上第二个.</p>
+<h1 id="CocosCreator"><a href="#CocosCreator" class="headerlink" title="CocosCreator"></a>CocosCreator</h1><p>这里只说一下.在打包发布到Facebook Instant Games的时候,目前不确定什么原因会导致代码压缩有缓存,而Facebook本身在线测试就很麻烦,而且没办法查log,所以最好自己有一个专门的方式来记录log,并且每次都确认下自己测试的是最新的版本</p>
+<h1 id="Egret"><a href="#Egret" class="headerlink" title="Egret"></a>Egret</h1><p>白鹭对Facebook Instant Games支持相对CocosCreator要好一些,发布前记得将Facebook的SDK通过script方式放进templates/index.html中,不然会发布失败,另外白鹭提供的fbinstants.d.ts有借口类型不对,比如getConnectedPlayerEntriesAsync这里的返回值应该是Promise&lt;LeaderboardEntry[]&gt;.</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Facebook/" rel="tag"># Facebook</a>
+          
+            <a href="/tags/Instant-Games/" rel="tag"># Instant Games</a>
+          
+            <a href="/tags/CocosCreator/" rel="tag"># CocosCreator</a>
+          
+            <a href="/tags/Egret/" rel="tag"># Egret</a>
+          
+            <a href="/tags/小游戏/" rel="tag"># 小游戏</a>
+          
+            <a href="/tags/html5-game/" rel="tag"># html5 game</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/09/20/h2数据库的简单使用/" rel="next" title="h2数据库的简单使用">
+                <i class="fa fa-chevron-left"></i> h2数据库的简单使用
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zNzAwMC8xMzUzNg=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/uploads/avatar.jpg"
+                alt="Shadow Priest" />
+            
+              <p class="site-author-name" itemprop="name">Shadow Priest</p>
+              <p class="site-description motion-element" itemprop="description">一个用scala写业务的奇葩，懂一点后端，懂一点前端。希望有一天能不是迫于生计去写代码而是为了自己的梦想。</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">43</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                友情链接
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://e3gs.github.io" title="HOLY" target="_blank">HOLY</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.wenterry.top" title="wenterry" target="_blank">wenterry</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Facebook-Instant-Games"><span class="nav-number">1.</span> <span class="nav-text">Facebook Instant Games</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#优势"><span class="nav-number">1.1.</span> <span class="nav-text">优势</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#劣势"><span class="nav-number">1.2.</span> <span class="nav-text">劣势</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#不存在的网站"><span class="nav-number">1.2.1.</span> <span class="nav-text">不存在的网站</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#调试"><span class="nav-number">1.2.2.</span> <span class="nav-text">调试</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#其他"><span class="nav-number">1.3.</span> <span class="nav-text">其他</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#广告"><span class="nav-number">1.3.1.</span> <span class="nav-text">广告</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#内购"><span class="nav-number">1.3.2.</span> <span class="nav-text">内购</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#平台"><span class="nav-number">1.4.</span> <span class="nav-text">平台</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#CocosCreator"><span class="nav-number"></span> <span class="nav-text">CocosCreator</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Egret"><span class="nav-number"></span> <span class="nav-text">Egret</span></a></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Shadow Priest</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("0tRxc2YkxN4IaQwWyac6R5yy-gzGzoHsz", "G0taB9bSBJwjP5O2PEqnlw24");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
