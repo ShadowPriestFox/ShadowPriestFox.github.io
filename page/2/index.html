@@ -252,6 +252,161 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://shadowpriestfox.github.io/2018/07/04/How-Tomcat-Works，一起读源码-一/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Shadow Priest">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="夏都的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/07/04/How-Tomcat-Works，一起读源码-一/" itemprop="url">How Tomcat Works，一起读源码(一)</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-07-04T12:04:20-04:00">
+                2018-07-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2018/07/04/How-Tomcat-Works，一起读源码-一/" class="leancloud_visitors" data-flag-title="How Tomcat Works，一起读源码(一)">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">Visitors&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>最近业务比较少，可写的东西自然也就少了。只好偷懒开一个读书笔记的系列了。<a href="https://www.amazon.com/How-Tomcat-Works-Developing-Container/dp/097521280X" target="_blank" rel="noopener">How Tomcat Works</a>这本书真的很好，当然接下来的几篇文章应该都是和这个相关的，也不排除突然事情变多会写一些有内容的东西。</p>
+<h2 id="概览"><a href="#概览" class="headerlink" title="概览"></a>概览</h2><p>Tomcat是一个Servlet的容器，所以自然需要满足Servlet的标准，基本上需要做三件事：</p>
+<ol>
+<li>创建一个Request对象，然后把Servlet可能需要的信息给填充好，当然这个Request对象得实现<code>javax.servlet.ServletRequest</code> 或者<code>javax.servlet.http.ServletRequest</code> 接口</li>
+<li>创建一个Response对象，Servlet需要用这个对象来给用户回消息，同样的Response对象得实现<code>javax.servlet.ServletRequest</code> 或者 <code>javax.servlet.http.ServletResponse</code> 接口</li>
+<li>调用servlet的service方法将request和response传给servlet</li>
+</ol>
+<h3 id="Catalina架构"><a href="#Catalina架构" class="headerlink" title="Catalina架构"></a>Catalina架构</h3><p>可以把Catalina看成是由Connector和Container组成的。Connector负责将请求转换成request和response，并使用servlet的service方法来响应请求。</p>
+<h2 id="第一章"><a href="#第一章" class="headerlink" title="第一章"></a>第一章</h2><p>第一章讲的东西很简单，就是构建一个监听某个端口的ServerSocket。当请求到达时，对请求的内容进行parse。主要得到URI，然后根据URI去访问webroot中对应的静态文件，然后写回给请求方。这样就完成了一个静态资源服务器。源码中响应只是把静态资源直接写回，并没有按照HTTP协议写回。所以直接使用浏览器访问可能会有问题。可以使用curl来访问是可以拿到正确结果的。</p>
+<h2 id="第二章"><a href="#第二章" class="headerlink" title="第二章"></a>第二章</h2><p>第二章实现了一个Servlet,然后根据url里是否包含/servlet/来判定是否调用对应的Servlet的service方法</p>
+<p>第二章的服务器在第一章的基础上做了以下几个扩展：</p>
+<ol>
+<li>将Request和Response分别实现ServletRequest和ServletResponse使之能作为servlet的service参数传递</li>
+<li>创建了一个专门用于创建servlet的processor。每次请求过来的时候在该processor里根据名称新生成一个servlet然后调用其service方法来响应请求</li>
+<li>对request和response创建了对应的facade为了防止他们的parse方法被调用</li>
+</ol>
+<h2 id="第三章"><a href="#第三章" class="headerlink" title="第三章"></a>第三章</h2><p>从这一章开始源码就开始有很清楚的模块划分了。这一章主要由三个模块构成：</p>
+<ol>
+<li>connector</li>
+<li>startup</li>
+<li>core</li>
+</ol>
+<p>相对于第二章启动类已经不再是由HttpServer启动了。而是改为了使用Bootstrap启动。</p>
+<p>HttpServer也被拆分成了HttpConnector和HttpProcessor。在本章中HttpConnector负责等待Http请求进入。而HttpProcessor负责创建Request和Response然后交给core包含的ServletProcessor或者StaticResourceProcessor来处理。在创建Request过程中Http请求并不会完全解析只会解析请求行和头部，请求内容和请求字符串的参数将交由Request自己去解析(会在servlet需要的时候才会去解析)</p>
+<p>同样的在交由servlet处理前Request和Response都会被对应的Facade包装。以隐藏那些parse方法</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://shadowpriestfox.github.io/2018/07/01/小程序后端环境搭建/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -283,7 +438,7 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-07-01T23:15:42+08:00">
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-07-01T11:15:42-04:00">
                 2018-07-01
               </time>
             
@@ -426,7 +581,7 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-06-18T21:34:12+08:00">
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-06-18T09:34:12-04:00">
                 2018-06-18
               </time>
             
@@ -570,7 +725,7 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-06-14T22:38:19+08:00">
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-06-14T10:38:19-04:00">
                 2018-06-14
               </time>
             
@@ -755,7 +910,7 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-06-13T12:58:15+08:00">
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-06-13T00:58:15-04:00">
                 2018-06-13
               </time>
             
@@ -900,7 +1055,7 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-06-05T13:11:26+08:00">
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-06-05T01:11:26-04:00">
                 2018-06-05
               </time>
             
@@ -1033,7 +1188,7 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-06-03T22:35:46+08:00">
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-06-03T10:35:46-04:00">
                 2018-06-03
               </time>
             
@@ -1159,7 +1314,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://shadowpriestfox.github.io/2018/06/01/小程序与STOMP/">
+    <link itemprop="mainEntityOfPage" href="https://shadowpriestfox.github.io/2018/05/31/小程序与STOMP/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Shadow Priest">
@@ -1178,7 +1333,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/06/01/小程序与STOMP/" itemprop="url">小程序与Websocket</a></h1>
+                <a class="post-title-link" href="/2018/05/31/小程序与STOMP/" itemprop="url">小程序与Websocket</a></h1>
         
 
         <div class="post-meta">
@@ -1190,8 +1345,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-06-01T00:12:59+08:00">
-                2018-06-01
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-05-31T12:12:59-04:00">
+                2018-05-31
               </time>
             
 
@@ -1208,7 +1363,7 @@
 
           
           
-             <span id="/2018/06/01/小程序与STOMP/" class="leancloud_visitors" data-flag-title="小程序与Websocket">
+             <span id="/2018/05/31/小程序与STOMP/" class="leancloud_visitors" data-flag-title="小程序与Websocket">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -1347,7 +1502,7 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-05-30T13:29:57+08:00">
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-05-30T01:29:57-04:00">
                 2018-05-30
               </time>
             
@@ -1496,7 +1651,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">18</span>
+                  <span class="site-state-item-count">19</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -1564,7 +1719,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>
