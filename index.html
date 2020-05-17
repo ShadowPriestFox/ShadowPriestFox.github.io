@@ -252,6 +252,174 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://shadowpriestfox.github.io/2020/05/15/babel-plugin-简短入门/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Shadow Priest">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="夏都的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/05/15/babel-plugin-简短入门/" itemprop="url">babel-plugin 简短入门</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-05-15T23:30:17-04:00">
+                2020-05-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2020/05/15/babel-plugin-简短入门/" class="leancloud_visitors" data-flag-title="babel-plugin 简短入门">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">Visitors&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="Babel"><a href="#Babel" class="headerlink" title="Babel"></a>Babel</h1><p>babel处理步骤主要分三步</p>
+<ol>
+<li><p>解析(parse)</p>
+<p>解析就是把你的代码变成一个AST</p>
+</li>
+<li><p>转换(transform)</p>
+<p>转换就是对AST遍历,对节点进行各种操作</p>
+</li>
+<li><p>生成(generate)</p>
+<p>生成没啥好说的就是将修改过的AST生成成代码</p>
+</li>
+</ol>
+<p>其实babel应该可以类比于scala的宏.可以在编译期对代码做一些事情</p>
+<h1 id="Babel-plugin"><a href="#Babel-plugin" class="headerlink" title="Babel-plugin"></a>Babel-plugin</h1><p>插件的工作流程无非也是在Babel处理过程中加入你的处理.</p>
+<p>说的更简单点就是在Babel将源码解析成AST之后.在转换时做一些操作.然后交回给babel继续处理.</p>
+<h2 id="visitor"><a href="#visitor" class="headerlink" title="visitor"></a>visitor</h2><p>在修改AST时,其实我们要做的就是去遍历整个树,然后找到我们需要修改的地方,进行修改就可以了.其实这里要使用的就是访问者模式</p>
+<p>当然你可以不知道什么是访问者模式,这并不妨碍你自己写一个babel插件.下面我会用更具体的话来描述如何去做.</p>
+<p>你需要做的就是根据你要访问的AST节点的类型来写一个对应的函数,这样,就会在遍历整个树的时候如果遍历到对应的节点就会去调用你的函数来修改AST</p>
+<p>下面用一个小例子来说明一下怎么来写这个插件:</p>
+<h2 id="console-log"><a href="#console-log" class="headerlink" title="console.log"></a>console.log</h2><p>平时调试代码打日志的时候经常会写类似这样的代码</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">console</span>.log(a,b,c);</span><br></pre></td></tr></table></figure>
+<p>但是如果传的变量多了就不知道谁是谁了</p>
+<p>所以其实我更希望是这样的</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">console</span>.log(<span class="string">'a='</span>,a,<span class="string">'b='</span>,b,<span class="string">'c='</span>,c)</span><br></pre></td></tr></table></figure>
+<p>这样一来就很简单了</p>
+<p>我们希望babel帮我们把代码做类似上面的转换</p>
+<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><p>整体的思路是这样的:先找到我们需要修改的节点位置,然后根据我们拿到的节点信息去添加节点</p>
+<h2 id="节点位置"><a href="#节点位置" class="headerlink" title="节点位置"></a>节点位置</h2><p>前面说过了.如果说要修改节点就应该先找到节点,也就是写对应的visitor,我们需要找到console.log这个节点的类型是什么.</p>
+<p>这里我们可以借助</p>
+<p>把我们需要转换的代码给输进去</p>
+<p>我们可以很轻松的知道console是一个Identifer,我们只要找到Identifier name是console的就能找到这个节点了.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports = &#123;</span><br><span class="line">  myPlugins(babel) &#123;</span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">        visitor: &#123;</span><br><span class="line">              Identifier(path) &#123;</span><br><span class="line">                  <span class="keyword">if</span> (path.node.name === <span class="string">'console'</span>) &#123;</span><br><span class="line">                      ...</span><br><span class="line">                  &#125;</span><br><span class="line">              &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="父节点"><a href="#父节点" class="headerlink" title="父节点"></a>父节点</h2><p>光找到console节点还不足以去修改这一部分代码,我们需要修改的是console.log的参数部分,而不是console这个节点,再看到AST,我们需要找的是CallExpression,console.log属于其callee部分,而我们真正需要修改的属于arguments部分</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (path.node.name === <span class="string">'console'</span>) &#123;</span><br><span class="line">    <span class="keyword">const</span> call = path.findParent(<span class="function">(<span class="params">x</span>) =&gt;</span> x.isCallExpression())</span><br><span class="line">	<span class="keyword">const</span> <span class="built_in">arguments</span> = call.node.arguments</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="转换"><a href="#转换" class="headerlink" title="转换"></a>转换</h2><p>最后我们需要做的就是对arguments进行修改了.这里我们需要使用@babel/types和@babel/generator</p>
+<p>首先我们看到estree的规范(github:estree/estree)里,CallExpression的arguments里会出现的类型是Expression和SpreadElement,所以我们需要处理的也就这两类,但考虑到我们直接输入字面表达式我们可能不需要对其进行修改,所以在对于Expression处理时就需要分为Literal和非Literal,大致代码如下</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> t = <span class="built_in">require</span>(<span class="string">'@babel/types'</span>)</span><br><span class="line"><span class="keyword">const</span> generate = <span class="built_in">require</span>(<span class="string">'@babel/generator'</span>).default</span><br><span class="line"></span><br><span class="line">call.node.arguments = <span class="built_in">arguments</span>.flatMap(<span class="function"><span class="params">x</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">if</span> (t.isSpreadElement(x)) &#123;</span><br><span class="line">    <span class="keyword">return</span> [t.stringLiteral(generate(x).code+<span class="string">'=['</span>),x,t.stringLiteral(<span class="string">"]"</span>)]</span><br><span class="line">  &#125;<span class="keyword">else</span> <span class="keyword">if</span> (t.isLiteral(x)) &#123;</span><br><span class="line">    <span class="keyword">return</span> [x]</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> [t.binaryExpression(<span class="string">'+'</span>, t.stringLiteral(generate(x).code + <span class="string">'='</span>), x)]</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<h2 id="完整代码"><a href="#完整代码" class="headerlink" title="完整代码"></a>完整代码</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">myPlugins(babel) &#123;</span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">        visitor: &#123;</span><br><span class="line">            Identifier(path) &#123;</span><br><span class="line">                <span class="keyword">if</span> (path.node.name === <span class="string">'console'</span>) &#123;</span><br><span class="line">                    <span class="keyword">const</span> call = path.findParent(<span class="function">(<span class="params">x</span>) =&gt;</span> x.isCallExpression())</span><br><span class="line">                    <span class="keyword">const</span> <span class="built_in">arguments</span> = call.node.arguments</span><br><span class="line">                    call.node.arguments = <span class="built_in">arguments</span>.flatMap(<span class="function"><span class="params">x</span> =&gt;</span> &#123;</span><br><span class="line">                        <span class="keyword">if</span> (t.isSpreadElement(x)) &#123;</span><br><span class="line">                            <span class="keyword">return</span> [t.stringLiteral(generate(x).code + <span class="string">'=['</span>), x, t.stringLiteral(<span class="string">"]"</span>)]</span><br><span class="line">                        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (t.isLiteral(x)) &#123;</span><br><span class="line">                            <span class="keyword">return</span> [x]</span><br><span class="line">                        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                            <span class="keyword">return</span> [t.binaryExpression(<span class="string">'+'</span>, t.stringLiteral(generate(x).code + <span class="string">'='</span>), x)]</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;)</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://shadowpriestfox.github.io/2019/03/15/关于leader-我有要说的/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -426,7 +594,7 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-12-11T09:53:16-05:00">
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-12-11T22:53:16-05:00">
                 2018-12-11
               </time>
             
@@ -570,7 +738,7 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-10-15T11:32:31-04:00">
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-10-15T23:32:31-04:00">
                 2018-10-15
               </time>
             
@@ -728,7 +896,7 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-09-20T09:08:40-04:00">
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-09-20T21:08:40-04:00">
                 2018-09-20
               </time>
             
@@ -869,7 +1037,7 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-09-09T10:36:54-04:00">
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-09-09T22:36:54-04:00">
                 2018-09-09
               </time>
             
@@ -985,7 +1153,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://shadowpriestfox.github.io/2018/08/20/一个创业公司CI-CD的演化-一-——GitLab-Runner/">
+    <link itemprop="mainEntityOfPage" href="https://shadowpriestfox.github.io/2018/08/21/一个创业公司CI-CD的演化-一-——GitLab-Runner/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Shadow Priest">
@@ -1004,7 +1172,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/08/20/一个创业公司CI-CD的演化-一-——GitLab-Runner/" itemprop="url">一个创业公司CI&CD的演化(一)——GitLab Runner</a></h1>
+                <a class="post-title-link" href="/2018/08/21/一个创业公司CI-CD的演化-一-——GitLab-Runner/" itemprop="url">一个创业公司CI&CD的演化(一)——GitLab Runner</a></h1>
         
 
         <div class="post-meta">
@@ -1016,8 +1184,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-08-20T12:18:21-04:00">
-                2018-08-20
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-08-21T00:18:21-04:00">
+                2018-08-21
               </time>
             
 
@@ -1034,7 +1202,7 @@
 
           
           
-             <span id="/2018/08/20/一个创业公司CI-CD的演化-一-——GitLab-Runner/" class="leancloud_visitors" data-flag-title="一个创业公司CI&CD的演化(一)——GitLab Runner">
+             <span id="/2018/08/21/一个创业公司CI-CD的演化-一-——GitLab-Runner/" class="leancloud_visitors" data-flag-title="一个创业公司CI&CD的演化(一)——GitLab Runner">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -1172,7 +1340,7 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-07-31T09:29:01-04:00">
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-07-31T21:29:01-04:00">
                 2018-07-31
               </time>
             
@@ -1328,7 +1496,7 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-07-21T09:20:57-04:00">
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-07-21T21:20:57-04:00">
                 2018-07-21
               </time>
             
@@ -1483,7 +1651,7 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-07-12T08:52:57-04:00">
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-07-12T20:52:57-04:00">
                 2018-07-12
               </time>
             
@@ -1588,156 +1756,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://shadowpriestfox.github.io/2018/07/07/How-Tomcat-works，一起读源码-二/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Shadow Priest">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/uploads/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="夏都的博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/07/07/How-Tomcat-works，一起读源码-二/" itemprop="url">How Tomcat works，一起读源码(二)</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-07-07T11:08:20-04:00">
-                2018-07-07
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-             <span id="/2018/07/07/How-Tomcat-works，一起读源码-二/" class="leancloud_visitors" data-flag-title="How Tomcat works，一起读源码(二)">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">Visitors&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="第四章"><a href="#第四章" class="headerlink" title="第四章"></a>第四章</h2><p>这一章分析的tomcat 4的默认连接器，这个连接器虽然说已经被弃用，被Coyote代替，但是作为一个学习工具还是很好使的。</p>
-<p>tomcat连接器必须做到以下几点：</p>
-<ol>
-<li>实现Connector接口</li>
-<li>必须创建Request对象，这个对象必须实现org.apache.catalina.Request</li>
-<li>必须创建Response对象，这个对象必须实现org.apache.catalina.Response</li>
-</ol>
-<p>这一章的连接器会调用Container的invoke方法来传递Request和Response对象</p>
-<p>这一章使用了org.apache.catalina.connector.http的HttpConnector实现了Connector,Lifecycle,Runnable三个接口。</p>
-<p>ServerSocket由HttpConnector的open方法创建，而这个open方法是从ServerSocketFactory中获取的一个serverSocket。</p>
-<p>HttpConnector维护了一个HttpProcessor的池子。</p>
-<p>Connector主要逻辑在run中(就是Thread的run),serverSocket的阻塞获取消息放在Connector中，当有请求到达时，会继续到createProcessor。此时会去池中获取(创建)一个新的HttpProcessor。然后调用processor的assign方法。这里的assign是立刻返回的。Processor会在另外一个线程完成解析工作。</p>
-<p>最后是Processor的process方法，也就是请求处理：</p>
-<ul>
-<li>解析链接parseConnecttion</li>
-<li>解析请求parseRequest</li>
-<li>解析头部parseHeader</li>
-</ul>
-<p>如果在解析过程成中没有出错的话则会通过connector调用container的invoke方法来响应这一次请求。</p>
-<p>总体来说默认连接器在Connector与Processor分别启用了新的线程来处理连接和解析请求以及响应。这样达到了异步的目的。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1792,7 +1810,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">19</span>
+                  <span class="site-state-item-count">20</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -1805,7 +1823,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">44</span>
+                  <span class="site-state-item-count">46</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>

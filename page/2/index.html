@@ -252,7 +252,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://shadowpriestfox.github.io/2018/07/04/How-Tomcat-Works，一起读源码-一/">
+    <link itemprop="mainEntityOfPage" href="https://shadowpriestfox.github.io/2018/07/07/How-Tomcat-works，一起读源码-二/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Shadow Priest">
@@ -271,7 +271,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/07/04/How-Tomcat-Works，一起读源码-一/" itemprop="url">How Tomcat Works，一起读源码(一)</a></h1>
+                <a class="post-title-link" href="/2018/07/07/How-Tomcat-works，一起读源码-二/" itemprop="url">How Tomcat works，一起读源码(二)</a></h1>
         
 
         <div class="post-meta">
@@ -283,8 +283,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-07-04T12:04:20-04:00">
-                2018-07-04
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-07-07T23:08:20-04:00">
+                2018-07-07
               </time>
             
 
@@ -301,7 +301,157 @@
 
           
           
-             <span id="/2018/07/04/How-Tomcat-Works，一起读源码-一/" class="leancloud_visitors" data-flag-title="How Tomcat Works，一起读源码(一)">
+             <span id="/2018/07/07/How-Tomcat-works，一起读源码-二/" class="leancloud_visitors" data-flag-title="How Tomcat works，一起读源码(二)">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">Visitors&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="第四章"><a href="#第四章" class="headerlink" title="第四章"></a>第四章</h2><p>这一章分析的tomcat 4的默认连接器，这个连接器虽然说已经被弃用，被Coyote代替，但是作为一个学习工具还是很好使的。</p>
+<p>tomcat连接器必须做到以下几点：</p>
+<ol>
+<li>实现Connector接口</li>
+<li>必须创建Request对象，这个对象必须实现org.apache.catalina.Request</li>
+<li>必须创建Response对象，这个对象必须实现org.apache.catalina.Response</li>
+</ol>
+<p>这一章的连接器会调用Container的invoke方法来传递Request和Response对象</p>
+<p>这一章使用了org.apache.catalina.connector.http的HttpConnector实现了Connector,Lifecycle,Runnable三个接口。</p>
+<p>ServerSocket由HttpConnector的open方法创建，而这个open方法是从ServerSocketFactory中获取的一个serverSocket。</p>
+<p>HttpConnector维护了一个HttpProcessor的池子。</p>
+<p>Connector主要逻辑在run中(就是Thread的run),serverSocket的阻塞获取消息放在Connector中，当有请求到达时，会继续到createProcessor。此时会去池中获取(创建)一个新的HttpProcessor。然后调用processor的assign方法。这里的assign是立刻返回的。Processor会在另外一个线程完成解析工作。</p>
+<p>最后是Processor的process方法，也就是请求处理：</p>
+<ul>
+<li>解析链接parseConnecttion</li>
+<li>解析请求parseRequest</li>
+<li>解析头部parseHeader</li>
+</ul>
+<p>如果在解析过程成中没有出错的话则会通过connector调用container的invoke方法来响应这一次请求。</p>
+<p>总体来说默认连接器在Connector与Processor分别启用了新的线程来处理连接和解析请求以及响应。这样达到了异步的目的。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://shadowpriestfox.github.io/2018/07/05/How-Tomcat-Works，一起读源码-一/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Shadow Priest">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="夏都的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/07/05/How-Tomcat-Works，一起读源码-一/" itemprop="url">How Tomcat Works，一起读源码(一)</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-07-05T00:04:20-04:00">
+                2018-07-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2018/07/05/How-Tomcat-Works，一起读源码-一/" class="leancloud_visitors" data-flag-title="How Tomcat Works，一起读源码(一)">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -438,7 +588,7 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-07-01T11:15:42-04:00">
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-07-01T23:15:42-04:00">
                 2018-07-01
               </time>
             
@@ -581,7 +731,7 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-06-18T09:34:12-04:00">
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-06-18T21:34:12-04:00">
                 2018-06-18
               </time>
             
@@ -725,7 +875,7 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-06-14T10:38:19-04:00">
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-06-14T22:38:19-04:00">
                 2018-06-14
               </time>
             
@@ -910,7 +1060,7 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-06-13T00:58:15-04:00">
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-06-13T12:58:15-04:00">
                 2018-06-13
               </time>
             
@@ -1055,7 +1205,7 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-06-05T01:11:26-04:00">
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-06-05T13:11:26-04:00">
                 2018-06-05
               </time>
             
@@ -1188,7 +1338,7 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-06-03T10:35:46-04:00">
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-06-03T22:35:46-04:00">
                 2018-06-03
               </time>
             
@@ -1314,7 +1464,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://shadowpriestfox.github.io/2018/05/31/小程序与STOMP/">
+    <link itemprop="mainEntityOfPage" href="https://shadowpriestfox.github.io/2018/06/01/小程序与STOMP/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Shadow Priest">
@@ -1333,7 +1483,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/05/31/小程序与STOMP/" itemprop="url">小程序与Websocket</a></h1>
+                <a class="post-title-link" href="/2018/06/01/小程序与STOMP/" itemprop="url">小程序与Websocket</a></h1>
         
 
         <div class="post-meta">
@@ -1345,8 +1495,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-05-31T12:12:59-04:00">
-                2018-05-31
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-06-01T00:12:59-04:00">
+                2018-06-01
               </time>
             
 
@@ -1363,7 +1513,7 @@
 
           
           
-             <span id="/2018/05/31/小程序与STOMP/" class="leancloud_visitors" data-flag-title="小程序与Websocket">
+             <span id="/2018/06/01/小程序与STOMP/" class="leancloud_visitors" data-flag-title="小程序与Websocket">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -1651,7 +1801,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">19</span>
+                  <span class="site-state-item-count">20</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -1664,7 +1814,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">44</span>
+                  <span class="site-state-item-count">46</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>
